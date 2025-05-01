@@ -1,0 +1,59 @@
+<form [formGroup]="userLoginFormData" (ngSubmit)="login()">
+<div class="surface-ground flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
+    <div class="flex flex-col items-center justify-center">
+        <!-- <h2>c01splace</h2> -->
+        <div style="border-radius:56px; padding:0.3rem;">
+            <div class="w-full bg-black-alpha-10 py-8 px-5 sm:px-8" style="border-radius:53px">
+                <div class="text-center mb-5">
+                    <span class="text-4xl"><i class="mb-2 pi pi-user" style="font-size: 2rem;"></i></span>
+                    <div class="text-900 text-3xl font-medium mb-3">Welcome!</div>
+                    <span class="text-600 font-medium">Sign in to continue</span>
+                </div>
+
+                <div>
+                    <div class="flex flex-col h-32">
+                        <label for="email1" class="block text-900 text-xl font-medium mb-2">Username</label>
+                        <input formControlName="username" id="email1" type="text" placeholder="username..." pInputText class="h-12 w-full md:w-30rem mb-2">
+
+                        @if (userLoginFormData.get('username')!.touched && userLoginFormData.get('username')!.invalid) {
+                            <small class="text-red-400 text-base">Enter a valid username!</small>
+                        }
+                    </div>
+
+                    <div class="flex flex-col h-32">
+                        <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
+                        <p-password formControlName="password" id="password1"  placeholder="password..." [toggleMask]="true" styleClass="h-12 w-full md:w-30rem mb-2" inputStyleClass="w-full p-3 md:w-30rem"></p-password>
+                        @if (userLoginFormData.get('password')!.touched && userLoginFormData.get('password')!.invalid) {
+                            <small class="text-red-400 text-base">Enter a valid password!</small>
+                        }
+                    </div>
+
+                    <div class="flex items-center justify-between gap-5">
+                        <!-- <div class="flex items-center">
+                            <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
+                            <label for="rememberme1">Remember me</label>
+                        </div>  -->
+                    </div>
+
+                    <!-- <small class="mt-2 text-red-400 text-base flex items-center">
+                        @if (userLoginFormData.get('username').touched && userLoginFormData.get('password').touched && userLoginFormData.invalid) {
+                            ! Please check the fields.
+                        }
+                    </small> -->
+
+                    <button pButton pRipple label="Sign In" class="w-full p-3 text-xl" [loading]="signInButtonSpam" [disabled]="userLoginFormData.invalid" icon="pi pi-sign-in"></button>
+
+                    <div class="w-full flex items-center mt-3 justify-between">
+                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)" href="/auth/password-recovery">Can't sign in?</a>
+
+                        <div class="flex flex-row items-center ml-6">
+                            <span class="mr-2">Or if you do not have an account, </span> 
+                            <button pButton class="p-button-text" icon="pi pi-user-plus" (click)="goToSignUpPage()" label="Sign Up"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>

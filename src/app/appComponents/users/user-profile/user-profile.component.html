@@ -1,0 +1,302 @@
+<p-card>
+    <div *ngIf="loggedUserData[0]" class="flex flex-row w-full justify-between mb-5 font-poppins">
+        <h5>Account details</h5>
+
+        <span>&#x40;{{loggedUserData[0].data.username}}</span>
+
+        <!-- <button pButton class="p-button-plain p-button-text" icon="pi pi-user-edit" iconPos="right" label="Edit Profile" (click)="showEditUserProfileDataDialog()"></button> -->
+
+    </div>
+
+    <button *ngIf="loggedUserData.length <= 0" pButton [loading]="true" label="Loading user data..." class="p-button-text"></button>
+
+    <!--page-content-->
+    <div class="flex flex-col justify-center items-center min-w-[400px]" *ngIf="loggedUserData.length > 0">
+        <!-- (onUpload)="onBasicUploadAuto($event)" -->
+        <!-- <div class="avatar-container flex flex-col w-full justify-center items-end">
+
+            
+            
+            <div class="card user-background h-25rem pt-6 pb-6 flex flex-col items-center justify-center w-full" style="background-image: url('https://wallpapercave.com/wp/wp6689718.jpg');">
+
+                
+
+                
+            </div>
+        </div> -->
+
+        <!-- <p-fieldset legend="Avatar">
+            <div class="w-full flex flex-row justify-start items-center">
+                <img class="h-10rem border-round-lg border-1 border-50" src="../../../../assets/demo/images/nature/nature8.jpg" alt="avatar">
+            </div>
+        </p-fieldset> -->
+
+        <!-- <div class="flex flex-col w-full justify-content-end items-end mt-5">
+            <button pButton class="p-button-plain p-button-text" icon="pi pi-pencil" label="Change Avatar" iconPos="right"></button>
+
+            <button pButton class="p-button-plain p-button-text" icon="pi pi-pencil" label="Change Background" iconPos="right"></button>
+        </div> -->
+
+        <div class="w-full mt-5">
+            <p-table [value]="loggedUserData" class="w-full">
+                <ng-template pTemplate="body" let-user>
+
+
+                    <tr>
+                        <td>
+
+                                <p-fieldset legend="Username/Account name" [toggleable]="false" class="line-height-3 m-0">
+                                    <label class="font-bold block mb-2"> <i class=""></i></label>
+
+                                    <div class="w-full flex flex-row justify-between items-center">
+                                        <span>{{ user.data.username }}</span> 
+                                        <!-- <button (click)="selectUserDataForUpdate(user.data.username)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button>  -->
+                                    </div>
+                                    
+                                    <div *ngIf="selectedUserDataForUpdate === user.data.username" class="w-full flex flex-col items-end">
+                                        
+                                    </div>
+                                </p-fieldset>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                                <p-fieldset legend="Nickname/Display name" [toggleable]="false" class="line-height-3 m-0">
+                                    <div *ngIf="selectedUserDataForUpdate !== user.data.userNickname" class="w-full flex flex-row justify-between items-center">
+                                        @if (changeUserNicknameDataButtonSpamControl) {
+                                            <i class="pi pi-spin pi-spinner"></i>
+                                        }
+                                        <span>{{ user.data.userNickname }}</span> 
+                                        <button (click)="selectUserDataForUpdate(user.data.userNickname)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button> 
+                                    </div>
+                                    
+                                    @if (selectedUserDataForUpdate === user.data.userNickname) {
+                                        <form [formGroup]="changeUserNicknameDataFormGroup">
+                                            <div class="w-full flex flex-col">
+                                                
+                                                    <input pInputText type="text" [value]="user.data.userNickname" class="w-full" formControlName="newUserNickname">
+                    
+                                                    @if (changeUserNicknameDataFormGroup.invalid) {
+                                                        <small class="mt-2 text-red-400 text-base">! Nickname must be at least 3 characters long.</small>
+                                                    }
+
+                                                    <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                        <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserNicknameDataButtonSpamControl"></button>
+
+                                                        <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" (click)="changeUserNicknameData()" [loading]="changeUserNicknameDataButtonSpamControl" [disabled]="changeUserNicknameDataFormGroup.invalid"></button>
+                                                    
+                                                    </div>
+                                                
+                                            </div>
+                                        </form>
+                                    }
+                                </p-fieldset>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <p-fieldset [toggleable]="false" legend="First name">
+                                <div class="flex flex-col">
+
+                                    <div *ngIf="selectedUserDataForUpdate !== user.data.userFirstName" class="w-full flex flex-row justify-between items-center">
+                                        <span>{{ user.data.userFirstName }}</span> 
+                                        <button (click)="selectUserDataForUpdate(user.data.userFirstName)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button> 
+                                    </div>
+                                    
+
+                                    @if (selectedUserDataForUpdate === user.data.userFirstName) {
+                                        <form [formGroup]="changeUserFirstNameDataFormGroup">
+                                            <div class="w-full flex flex-col">
+                                                
+                                                <input pInputText type="text" [value]="user.data.userFirstName" class="w-full" formControlName="newUserFirstName">
+
+                                                @if (changeUserFirstNameDataFormGroup.invalid) {
+                                                    <small class="mt-2 text-red-400 text-base">! Please enter valid first name.</small>
+                                                }
+                    
+                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                    <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserFirstNameDataButtonSpamControl"></button>
+
+                                                    <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" (click)="changeUserFirstNameData()" [loading]="changeUserFirstNameDataButtonSpamControl" [disabled]="changeUserFirstNameDataFormGroup.invalid"></button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+
+                                    
+        
+                                </div>
+                            </p-fieldset>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p-fieldset legend="Last name" [toggleable]="false">
+                                <div class="flex flex-col">
+                                    <div *ngIf="selectedUserDataForUpdate !== user.data.userLastName" class="w-full flex flex-row justify-between items-center">
+                                        <span>{{ user.data.userLastName }}</span> 
+                                        <button (click)="selectUserDataForUpdate(user.data.userLastName)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button> 
+                                    </div>
+                                    
+                                    @if (selectedUserDataForUpdate === user.data.userLastName) {
+                                        <form [formGroup]="changeUserLastNameDataFormGroup">
+                                            <div class="w-full flex flex-col">
+                                                <input pInputText type="text" [value]="user.data.userLastName" class="w-full" formControlName="newUserLastName">
+                    
+                                                @if (changeUserLastNameDataFormGroup.invalid) {
+                                                    <small class="mt-2 text-red-400 text-base">! Please enter a valid last name.</small>
+                                                }
+
+                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                    <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserLastNameDataButtonSpamControl"></button>
+
+                                                    <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserLastNameDataButtonSpamControl" [disabled]="changeUserLastNameDataFormGroup.invalid" (click)="changeUserLastNameData()"></button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                    }
+
+                                    
+                                </div>
+                            </p-fieldset>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p-fieldset [toggleable]="false" legend="E-mail">
+                                <div class="flex flex-col">
+                                    <div *ngIf="selectedUserDataForUpdate !== user.data.userEmail" class="w-full flex flex-row justify-between items-center">
+                                        <span>{{ user.data.userEmail }}</span> 
+                                        <button (click)="selectUserDataForUpdate(user.data.userEmail)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button> 
+                                    </div>
+                                    
+                                    @if (selectedUserDataForUpdate === user.data.userEmail) {
+                                        <form [formGroup]="changeUserEmailDataFormGroup">
+                                            <div class="w-full flex flex-col">
+                                                <input pInputText type="text" [value]="user.data.userEmail" class="w-full" formControlName="newUserEmail">
+
+                                                @if (changeUserEmailDataFormGroup.invalid) {
+                                                    <small class="mt-2 text-red-400 text-base">! Please enter a valid email.</small>
+                                                }
+                    
+                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                    <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserEmailDataButtonSpamControl"></button>
+
+                                                    <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserEmailDataButtonSpamControl" [disabled]="changeUserEmailDataFormGroup.invalid" (click)="changeUserEmailData()"></button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+
+                                    
+                                </div>
+                            </p-fieldset>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p-fieldset legend="Date of birth">
+                                <div class="flex flex-col">
+                                    <div *ngIf="selectedUserDataForUpdate !== user.data.userDateOfBirth" class="w-full flex flex-row justify-between items-center">
+                                        <span>{{ user.data.userDateOfBirth | date }}</span> 
+                                        <button (click)="selectUserDataForUpdate(user.data.userDateOfBirth)" pButton icon="pi pi-pencil" class="p-button-text p-button-plain profile-edit-button" ></button> 
+                                    </div>
+                                    
+                                    @if (selectedUserDataForUpdate === user.data.userDateOfBirth) {
+                                        <form [formGroup]="changeUserDateOfBirthDataFormGroup">
+                                            <div class="w-full flex flex-col">
+                                                <p-datepicker styleClass="w-full" placeholder="MM/DD/YYYY..." formControlName="newUserDateOfBirth"></p-datepicker>
+
+                                                @if (changeUserDateOfBirthDataFormGroup.invalid) {
+                                                    <small class="mt-2 text-red-400 text-base">! You must be at least 16 years old.</small>
+                                                }
+                    
+                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                    <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserDateOfBirthDataButtonSpamControl"></button>
+
+                                                    <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserDateOfBirthDataButtonSpamControl" [disabled]="changeUserDateOfBirthDataFormGroup.invalid" (click)="changeUserDateOfBirthData()"></button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+
+                                    
+                                </div>
+                            </p-fieldset>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>
+                            <div class="flex flex-row justify-end">
+                                <button pButton class="p-button-text" (click)="showChangeUserPasswordDataDialog()">
+                                    <span>Change password <i class="pi pi-sync"></i></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="flex flex-row justify-end">
+                                <button pButton class="p-button-text" (click)="getNewUserRecoveryKey()" [loading]="getNewUserRecoveryKeySpamControl">
+                                    <span>Get new recovery key <i class="pi pi-key"></i></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+        
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+</p-card>
+
+<p-dialog [(visible)]="newRecoveryKeyDialogVisible" header="New recovery key" [modal]="true" [draggable]="false" [resizable]="false" [closable]="false">
+    <div class="w-full">
+        <div class="flex flex-col">
+            <span class="mb-2">Please do not lose the key.</span>
+            <span class="mb-5">Key: {{newRecoveryKeyResponseData.data}}</span>
+        </div>
+        <div class="flex flex-row justify-end">
+            <button pButton label="Done" icon="pi pi-check" (click)="hideNewRecoveryKeyDialog()"></button>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog [modal]="true" [draggable]="false" [resizable]="false" [style]="{ width: '30rem' }" [(visible)]="changeUserPasswordDataDialogVisible">
+    <form [formGroup]="changeUserPasswordDataFormGroup" class="w-full flex flex-col">
+        <div class="w-full flex flex-col">
+            <label for="email1" class="block text-900 text-xl font-medium mb-2">Current password</label>
+            <p-password inputStyleClass="w-full" styleClass="w-full mb-3" formControlName="oldUserPassword" [feedback]="false" placeholder="Current password..."></p-password>
+
+            <label for="email1" class="block text-900 text-xl font-medium mb-2">New password</label>
+            <p-password inputStyleClass="w-full" styleClass="w-full mb-3" formControlName="newUserPassword" placeholder="New password..."></p-password>
+
+            <div class="h-10rem">
+                <label for="email1" class="block text-900 text-xl font-medium mb-2">New password again</label>
+                <p-password inputStyleClass="w-full" styleClass="w-full mb-3" placeholder="New password again..." [feedback]="false" formControlName="newUserPasswordAgain"></p-password>
+                
+                @if (changeUserPasswordDataFormGroup.get('newUserPasswordAgain')!.touched && changeUserPasswordDataFormGroup.get('newUserPasswordAgain')!.value !== changeUserPasswordDataFormGroup.get('newUserPassword')!.value) {
+                    <small class="text-red-400 text-base">Passwords must be the same!</small>
+                }
+            </div>
+
+            <div class="flex flex-row justify-end">
+                <button pButton label="Change Password" class="ml-2 p-button-success" icon="pi pi-check" (click)="changeUserPasswordData()"></button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

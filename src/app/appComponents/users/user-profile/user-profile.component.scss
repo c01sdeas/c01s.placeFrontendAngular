@@ -1,0 +1,34 @@
+tr .profile-edit-button{
+    visibility: hidden;
+}
+tr:hover .profile-edit-button{
+    visibility: visible;
+}
+
+tr{
+    height: 70px;
+    border: none;
+}
+
+td{
+    border: none;
+}
+
+
+.p-fileupload .p-button{
+    background-color: red;
+}
+.p-fileupload-choose-button {
+    background-color: red;
+}
+
+
+// .container-card{
+//     background-color: red;
+// }
+
+.user-background{
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}

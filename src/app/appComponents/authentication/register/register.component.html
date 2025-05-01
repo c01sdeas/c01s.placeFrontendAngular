@@ -1,0 +1,132 @@
+@if(registrationResponse.length == 0){
+    <form [formGroup]="signUpFormData" (ngSubmit)="checkBeforeSignUp()" class="w-full">
+        <div class="mt-5 mb-5  flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
+            <div class="flex flex-col items-center justify-center">
+                <!-- <h2>c01splace</h2> -->
+                <div style="border-radius:56px; padding:0.3rem;">
+                    <div class="w-full bg-black-alpha-10 py-8 px-5 sm:px-8" style="border-radius:53px">
+                        <div class="text-center mb-5">
+                            <span class="text-4xl"><i class="mb-2 pi pi-user" style="font-size: 2rem;"></i></span>
+                            <div class="text-900 text-3xl font-medium mb-3">Welcome!</div>
+                            <span class="text-600 font-medium">Create new account</span>
+                        </div>
+
+                            <div class="w-full min-w-96">
+                                @if (usernameValidControl === false) {
+                                    <div class="flex flex-col mb-5">
+                                        <span class="text-primary w-full mb-3">
+                                            <i class="pi pi-info"></i>The username information can only be selected once and cannot be changed afterwards.
+                                        </span>
+                                        <div class="w-full flex flex-col h-32 items-start">
+                                            <label class="block text-900 text-xl font-medium mb-2">Username / Account name</label>
+                                            <input type="text" placeholder="Username..." pInputText class="h-12 w-full "  formControlName="username" (input)="selectValidUsername()">
+                                            <div class="flex flex-col h-2rem pt-2">
+                                                @if((signUpFormDataErrorControl || signUpFormData.get('username')!.touched) && signUpFormData.get('username')!.invalid){
+                                                    <small class="mt-1 text-red-400 text-base">! Username must be at least 3 characters long and must contain only letters and numbers.</small>
+                                                }
+                                                @if (usernameUnavailableControl && usernameUnavailableControlBeingChecked === false) {
+                                                    <small class="mt-1 text-red-400 text-base">! Username is already taken.</small>
+                                                } 
+        
+                                                @if(usernameUnavailableControl === false && usernameUnavailableControlBeingChecked === false) {
+                                                    <small class="mt-1 text-green-400 text-base"><i class="pi pi-check"></i> Username is available.</small>
+                                                }
+                                                @if (signUpFormData.get('username')!.valid && usernameUnavailableControlBeingChecked === true) {
+                                                    <small class="mt-1 text-blue-400 text-base"><i class="pi pi-spin pi-spinner"></i> Checking...</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button [loading]="signUpFormData.get('username')!.valid && usernameUnavailableControlBeingChecked === true" icon="pi pi-arrow-right" [disabled]="this.signUpFormData.get('username')!.value.length < 3 || this.signUpFormData.get('username')!.value.length === 0 || usernameUnavailableControl === true || usernameUnavailableControl === undefined || usernameUnavailableControlBeingChecked === true" pButton pRipple label="NEXT" class="w-full p-3 text-xl" type="button" (click)="nextToOtherData()"></button>
+                                } 
+                                
+                                @if (usernameUnavailableControl === false && usernameValidControl) {
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 text-xl font-medium mb-2">First name</label>
+                                        <input type="text" placeholder="First name..." pInputText class="h-12 w-full md:w-30rem"  formControlName="userFirstName">
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('userFirstName')!.touched) && signUpFormData.get('userFirstName')!.invalid){
+                                            <small class="mt-2 text-red-400 text-base">! Please enter valid first name.</small>
+                                        }
+                                    </div>
+            
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 text-xl font-medium mb-2">Last name</label>
+                                        <input type="text" placeholder="Last name..." pInputText class="h-12 w-full md:w-30rem"  formControlName="userLastName">
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('userLastName')!.touched) && signUpFormData.get('userLastName')!.value.trim().length <= 0){
+                                            <small class="mt-2 text-red-400 text-base">! Please enter a valid last name.</small>
+                                        }
+                                    </div>
+            
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 text-xl font-medium mb-2">E-Mail</label>
+                                        <input type="text" placeholder="E-mail..." pInputText class="h-12 w-full md:w-30rem"  formControlName="userEmail">
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('userEmail')!.touched) && signUpFormData.get('userEmail')!.invalid){
+                                            <small class="mt-2 text-red-400 text-base">! Please enter a valid email.</small>
+                                        }
+                                    </div>
+
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 text-xl font-medium mb-2">Date of birth </label>
+                                        
+                                        <p-datepicker styleClass="h-12 w-full" placeholder="MM/DD/YYYY..." formControlName="userDateOfBirth"></p-datepicker>
+
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('userDateOfBirth')!.touched) && signUpFormData.get('userDateOfBirth')!.invalid){
+                                            <small class="mt-2 text-red-400 text-base">! You must be at least 16 years old.</small>
+                                        }
+                                    </div>
+            
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 text-xl font-medium mb-2">Nickname</label>
+                                        <input type="text" placeholder="Nickname..." pInputText class="h-12 w-full md:w-30rem"  formControlName="userNickname">
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('userNickname')!.touched) && signUpFormData.get('userNickname')!.invalid){
+                                            <small class="mt-2 text-red-400 text-base">! Nickname must be at least 3 characters long.</small>
+                                        }
+                                    </div>
+                
+                                    <div class="flex flex-col mb-5">
+                                        <label class="block text-900 font-medium text-xl mb-2">Password</label>
+                                        <p-password placeholder="password..." [toggleMask]="true" styleClass="w-full" inputStyleClass="h-12 w-full md:w-30rem" formControlName="password"></p-password>
+                                        @if((signUpFormDataErrorControl || signUpFormData.get('password')!.touched) && signUpFormData.get('password')!.invalid){
+                                            <small class="mt-2 text-red-400 text-base">! Password must be at least 6 characters long.</small>
+                                        }
+                                    </div>
+
+                                    <button [loading]="signUpButtonSpam" pButton pRipple label="CREATE NOW!" class="w-full p-3 text-xl" type="submit" icon="pi pi-user-plus"></button>
+                                }
+        
+                                <!-- <label class="block text-900 font-medium text-xl mb-2">Password Again</label>
+                                <p-password placeholder="password..." styleClass="mb-5" inputStyleClass="w-full p-3 md:w-30rem" formControlName="userPasswordAgain"></p-password> -->
+            
+                                <!-- <div class="flex items-center justify-between mb-5 gap-5">
+                                    
+                                </div> -->
+                                
+                                
+        
+                                <div class="w-full flex items-center mt-3 justify-end">
+                                    <span class="mr-2">If you have an account, </span>
+                                    <button pButton (click)="goToSignInPage()" type="button" icon="pi pi-sign-in" class="p-button-text" label="Sign In"></button>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+@if(registrationResponse.length > 0){
+    <p-dialog header="Welcome, {{this.signUpFormData.get('userNickname')!.value}}!" [(visible)]="afterRegistrationDialogVisible" [modal]="true" [draggable]="false" [resizable]="false" [closable]="false">
+        <div class="w-full">
+            <div class="w-full flex flex-col justify-between h-8rem">
+
+                <span>Please do not lose your recovery key. </span>
+
+                <span>Your Key: {{registrationResponse}}</span>
+
+                <span class="mt-2 w-full flex flex-row items-center"> You can <p-button label="Sign In" variant="text" icon="pi pi-sign-in" (click)="goToSignInPage()"></p-button> now.</span>
+            </div>
+        </div>
+    </p-dialog>
+}
