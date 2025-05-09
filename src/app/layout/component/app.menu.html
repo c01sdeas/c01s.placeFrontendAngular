@@ -1,0 +1,48 @@
+<div class="flex flex-col justify-between h-full">
+    <span class="text-3xl font-anta" style="font-family: 'Anta', sans-serif;font-weight: bold;">c01splace</span>
+
+    <p-button label="Sign In" styleClass="w-full" icon="pi pi-sign-in" (onClick)="goToSignInPage()"/>
+    
+    <ul class="layout-menu">
+        <ng-container *ngFor="let item of model; let i = index">
+            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+            <li *ngIf="item.separator" class="menu-separator"></li>
+        </ng-container>
+    </ul>
+    
+    © {{ currentYear }} c01splace
+</div>
+
+<!--cookies-->
+<p-dialog [(visible)]="showPreferencesDialog" modal draggable="false" resizable="false" header="Manage Cookie Preferences" [styleClass]="'mr-12 ml-12'" dismissableMask="true" appendTo="body">
+  <p>Choose which types of cookies you want to allow:</p>
+
+  <div class="flex flex-col">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.essential" [disabled]="true" binary="true" class="mr-2"/> -->
+      <p-toggleswitch [(ngModel)]="preferences.essential" [disabled]="true" class="mr-2"/> <span>Essential (Always required)</span>
+    </span>
+    <p>Necessary for the website to function properly. Cannot be disabled.</p>
+  </div>
+
+  <div class="flex flex-col mt-6 mb-6">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.analytics" binary="true" class="mr-2"/>  -->
+      <p-toggleswitch [(ngModel)]="preferences.analytics" class="mr-2"/>Analytics
+    </span>
+    <p>Helps us understand how visitors interact with the site to improve user experience.</p>
+  </div>
+
+  <div class="flex flex-col">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.ads" binary="true" class="mr-2"/>  -->
+      <p-toggleswitch [(ngModel)]="preferences.ads" class="mr-2"/>Advertising / Marketing
+    </span>
+    <p>Used to show personalized ads and measure ad performance across platforms.</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Save Preferences" (click)="savePreferences()"/>
+    <p-button label="Accept All" (click)="acceptAll()" severity="success" icon="pi pi-check"/>
+  </ng-template>
+</p-dialog>

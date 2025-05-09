@@ -21,13 +21,16 @@ import { AppsComponent } from './app/appComponents/apps/apps.component';
 import { UserProfileComponent } from './app/appComponents/users/user-profile/user-profile.component';
 import { UsersComponent } from './app/appComponents/users/users.component';
 import { BannedErrorComponent } from './app/appComponents/error-pages/banned-error/banned-error.component';
+import { PrivacyPolicyComponent } from './app/pages/privacy-policy/privacy-policy.component';
+import { TermsOfUseComponent } from './app/pages/terms-of-use/terms-of-use.component';
+import { CookiePolicyComponent } from './app/pages/cookie-policy/cookie-policy.component';
 
 export const appRoutes: Routes = [
-    {
-        path: '',
-        redirectTo: '/app/blog/list', // Ana rota doğrudan dashboard'a yönlendirilecek
-        pathMatch: 'full',       // Tam path eşleştiğinde yönlendir
-    },
+    // {
+    //     path: '',
+    //     redirectTo: '/app/blog/list', // Ana rota doğrudan dashboard'a yönlendirilecek
+    //     pathMatch: 'full',       // Tam path eşleştiğinde yönlendir
+    // },
     {
         path: '',
         component: AppLayout,
@@ -35,6 +38,10 @@ export const appRoutes: Routes = [
         
         
         children: [
+            { path: '', component: BlogAppComponent, children: [
+                { path: '', component: BlogListComponent },
+                
+            ] },
             { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
@@ -42,14 +49,15 @@ export const appRoutes: Routes = [
             { path: 'user', component: UsersComponent, canActivate: [authGuard], children: [
                 { path: 'profile', component: UserProfileComponent }
             ]},
+            
             // { path: 'apps', component: AppsComponent },
 
             {
-            path: 'app', component: AppsComponent,
+            path: '', component: AppsComponent,
                 children: [
                     { path: 'blog', component: BlogAppComponent, children: [
                         { path: 'list', component: BlogListComponent },
-                        { path: 'detail', component: BlogDetailComponent },
+                        { path: ':slug', component: BlogDetailComponent },
                         { path: 'pannel', component: BlogPannelComponent, children: [
                             { path: 'add', component: AddNewBlogComponent }
                         ] }
@@ -66,11 +74,24 @@ export const appRoutes: Routes = [
         { path: 'register', component: RegisterComponent },
         { path: 'password-recovery', component: PasswordRecoveryComponent }
     ] },
+
     {path: 'error', component: ErrorPagesComponent, children: [
         {path: 'notfound', component: NotFoundErrorComponent},
         {path: 'unauthorized', component: UnauthorizedErrorComponent},
         {path: 'banned', component: BannedErrorComponent},
     ]},
+    {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent
+    },
+    {
+        path: 'terms-of-use',
+        component: TermsOfUseComponent
+    },
+    {
+        path: 'cookie-policy',
+        component: CookiePolicyComponent
+    },
     { path: 'landing', component: Landing },
     { path: 'notfound', component: Notfound },
     { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },

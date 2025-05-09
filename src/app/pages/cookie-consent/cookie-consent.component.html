@@ -1,0 +1,85 @@
+<!-- <p-dialog [(visible)]="display" [modal]="true" [closable]="false" [draggable]="false" header="Your Privacy Matters" [styleClass]="'mr-12 ml-12'">
+  <div class="text-center">
+    <p class="mb-3">
+      We use cookies and similar technologies to improve your experience, deliver personalized ads, analyze site usage, and support essential site operations.
+    </p>
+    <p>
+      You can choose to allow all cookies or only the essential ones. For details, see our 
+      <a href="/privacy-policy" target="_blank" class="text-primary underline">Privacy Policy</a>.
+    </p>
+    <div class="mt-4 flex justify-end gap-2">
+      <button pButton type="button" label="Accept All" icon="pi pi-check" class="p-button-success" (click)="acceptAll()"></button>
+      <button pButton type="button" label="Essential Only" icon="pi pi-lock" class="p-button-secondary" (click)="acceptEssentialOnly()"></button>
+    </div>
+  </div>
+</p-dialog> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p-dialog [(visible)]="showPreferencesDialog" modal draggable="false" resizable="false" header="Manage Cookie Preferences" [styleClass]="'mr-12 ml-12'">
+  <p>Choose which types of cookies you want to allow:</p>
+
+  <div class="flex flex-col">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.essential" [disabled]="true" binary="true" class="mr-2"/> -->
+      <p-toggleswitch [(ngModel)]="preferences.essential" [disabled]="true" class="mr-2"/> <span>Essential (Always required)</span>
+    </span>
+    <p>Necessary for the website to function properly. Cannot be disabled.</p>
+  </div>
+
+  <div class="flex flex-col mt-6 mb-6">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.analytics" binary="true" class="mr-2"/>  -->
+      <p-toggleswitch [(ngModel)]="preferences.analytics" class="mr-2"/>Analytics
+    </span>
+    <p>Helps us understand how visitors interact with the site to improve user experience.</p>
+  </div>
+
+  <div class="flex flex-col">
+    <span class="flex flex-row items-center mb-2">
+      <!-- <p-checkbox [(ngModel)]="preferences.ads" binary="true" class="mr-2"/>  -->
+      <p-toggleswitch [(ngModel)]="preferences.ads" class="mr-2"/>Advertising / Marketing
+    </span>
+    <p>Used to show personalized ads and measure ad performance across platforms.</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Save Preferences" (click)="savePreferences()"/>
+    <p-button label="Accept All" (click)="acceptAll()" severity="success" icon="pi pi-check"/>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="showBanner" draggable="false" resizable="false" closable="false" modal header="Your Privacy Matters" [styleClass]="'mr-12 ml-12'">
+  <div class="flex flex-col">
+    <p class="mb-3">
+      We use cookies and similar technologies to improve your experience, deliver personalized ads, analyze site usage, and support essential site operations.
+    </p>
+    <p>
+      You can choose to allow all cookies or only the essential ones.
+      For details, please review our
+      <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-primary underline">Privacy Policy</a>, 
+      <a href="/cookie-policy" target="_blank" rel="noopener noreferrer" class="text-primary underline">Cookie Policy</a>, and
+      <a href="/terms-of-use" target="_blank" rel="noopener noreferrer" class="text-primary underline">Terms of Use</a>.
+    </p>
+    <div class="flex flex-row justify-between">
+      
+      <div class="flex flex-row">
+        <p-button label="Manage Preferences" (click)="openPreferences()" severity="warn" icon="pi pi-cog" class="mr-3"/>
+        <p-button label="Essential Only" (click)="acceptEssentialOnly()" icon="pi pi-lock" severity="secondary"/>
+      </div>
+
+      <p-button label="Accept All Cookies" (click)="acceptAll()" severity="success" icon="pi pi-check" />
+    </div>
+  </div>
+</p-dialog>
