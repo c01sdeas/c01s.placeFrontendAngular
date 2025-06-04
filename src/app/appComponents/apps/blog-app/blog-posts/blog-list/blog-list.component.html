@@ -1,0 +1,102 @@
+<div class="mb-6 flex flex-row justify-between w-full items-center">
+    <i class="pi pi-tag mr-2"></i>
+    <p-tabs value="0" class="w-full" scrollable>
+        <p-tablist>
+            <p-tab value="-1" routerLink="/tag/list"><i class="pi pi-plus"></i></p-tab>
+            <p-tab value="0">All</p-tab>
+            <p-tab value="1">Following</p-tab>
+            <!-- <p-tab value="2">Popular</p-tab> -->
+        </p-tablist>
+    </p-tabs>
+</div>
+
+<p-divider type="dashed"/>
+
+@if (postsIsLoading) {
+    <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
+}
+
+@if (!postsIsLoading && blogList && !blogList.data) {
+    <p class="font-lato text-xl mb-12 mt-12">No posts found</p>
+}
+
+
+
+<div class="w-full flex flex-col items-center">
+
+    @if (blogList.data && blogList.data.length>0) {
+        @for (blog of blogList.data; track $index) {
+            @if(blog.status || !blog.status){
+                <div class="mb-12 mt-12 rounded-lg w-full">
+
+                    <div class="flex flex-row items-center mb-3 flex-wrap">
+                        <a class="cursor-pointer hover:underline flex flex-row items-center font-bold mr-2" routerLink="/tag/{{blog.categorySlug}}"><i class="pi pi-tag mr-2"></i> <span class="mr-2 font-medium">in</span>{{blog.categoryTitle}}</a>
+                        
+                        <a class="cursor-pointer hover:underline flex flex-row items-center text-sm" routerLink="/user/{{blog.username}}/posts"><span class="mr-2 text-sm">by</span> {{blog.userNickname}} <i class="pi pi-user ml-2"></i></a>
+                    </div>
+
+                    <div class="flex flex-row mb-6">
+                        <span class="flex flex-row items-center text-sm mr-2"><i class="pi pi-hourglass mr-2"></i>{{blog.readingTime}} min read</span>
+                        <span class="flex flex-row items-center text-sm"><i class="pi pi-calendar-clock mr-2"></i>{{blog.createdAt | date:'MM/dd/yyyy h:mm a z'}}</span>
+                    </div>
+
+                    <div class="flex flex-row">
+                        <div class="flex flex-col w-full">
+                            <a class="w-full cursor-pointer" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}"><h4 class="font-poppins">{{blog.title}}</h4></a>
+            
+                            <p class="font-lato mb-3 mt-3 text-lg opacity-85">{{blog.intro}}</p> 
+                        </div>
+                        
+                        @if (blog.image && blog.image.length>0) {
+                            <div class="w-2/5 overflow-hidden rounded-lg ml-2 h-36">
+                                <img class="hover:opacity-75 h-full w-full object-cover" src="{{environmentApiImageUrl}}/{{blog.image}}" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}" alt="content-image">
+                            </div>
+                        }
+                    </div>
+            
+                    <div class="flex flex-row items-center justify-between mt-6">
+                        <div class="flex flex-row items-center mr-6 cursor-pointer" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}">
+                            @if(blog.voteCount>0){
+                                <span class="flex flex-row items-center font-bold">
+                                    <i class="pi pi-thumbs-up mr-2"></i>
+                                    +{{blog.voteCount}} vote@if(blog.voteCount>1){s}
+                                </span>
+                            }
+                            @if(blog.voteCount<0){
+                                <span class="flex flex-row items-center font-bold">
+                                    <i class="pi pi-thumbs-down mr-2"></i>
+                                    {{blog.voteCount}} vote@if(blog.voteCount<-1){s}
+                                </span>
+                            }
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library"/>
+                        </div>
+                    </div>
+                </div>
+                <p-divider type="dashed"/>
+            }
+        }
+    }
+    
+    @if(loadMorePostButtonVisible && blogList.data && blogList.data.length>0){
+        <p-button loading="{{postsIsLoading}}" severity="secondary" variant="text" (click)="getAllBlogPostsWithScroll()" label="Load more"/>
+    }
+
+    @if(!loadMorePostButtonVisible && blogList.data && blogList.data.length>0){
+        <span class="font-lato text-xl">No more posts</span>
+    }
+
+</div>
+<style>
+    
+    :host ::ng-deep .p-tab {
+        background-color: transparent;
+    }
+
+    :host ::ng-deep .p-tablist-tab-list{
+        background-color: transparent;
+    }
+
+
+</style>

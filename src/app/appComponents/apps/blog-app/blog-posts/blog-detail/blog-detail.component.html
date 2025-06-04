@@ -1,0 +1,166 @@
+
+    
+<div class="w-full flex flex-row justify-between items-center mb-16">
+    <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
+    
+    @if(!blogPostDetailIsLoading && blogPostDetail.data && blogPostDetail.data.title){
+        <p-menu #menu [model]="menuItems" [popup]="true" />
+        <p-button (click)="menu.toggle($event)" variant="text" severity="secondary" icon="pi pi-ellipsis-v"/>
+    }
+</div>
+
+
+@if(blogPostDetailIsLoading){
+    <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
+}
+
+@if(!blogPostDetailIsLoading && !blogPostDetail.data){
+    <p>Post not found.</p>
+}
+
+@if(!blogPostDetailIsLoading && blogPostDetail.data && blogPostDetail.data.title){
+    
+    <div class="flex flex-row items-center mb-3">
+        <a class="cursor-pointer hover:underline flex flex-row items-center font-bold mr-2" routerLink="/tag/{{blogPostDetail.data.categorySlug}}"><i class="pi pi-tag mr-2"></i> <span class="mr-2 font-medium">in</span>{{blogPostDetail.data.categoryTitle}}</a>
+        <span class="mr-2 text-sm">by</span>
+        <a class="cursor-pointer hover:underline flex flex-row items-center text-sm" routerLink="/user/{{blogPostDetail.data.username}}/posts"> {{blogPostDetail.data.userNickname}}.</a>
+    </div>
+
+    <div class="flex flex-row mb-6">
+        <span class="flex flex-row items-center text-sm mr-2"><i class="pi pi-hourglass mr-2"></i>{{blogPostDetail.data.readingTime}} min read</span>
+        <span class="flex flex-row items-center text-sm"><i class="pi pi-calendar-clock mr-2"></i>{{blogPostDetail.data.createdAt | date:'MM/dd/yyyy h:mm a z'}}</span>
+    </div>
+
+    <div class="flex items-center">
+        <h2 class="font-poppins text-4xl">{{blogPostDetail.data.title}}</h2>
+    </div>
+
+    
+
+    <p-divider type="dashed"/>
+
+    <div class="flex flex-row items-center justify-between">
+        <div class="flex flex-row items-center mr-6">
+            <p-button severity="secondary" pTooltip="Up vote" variant="text" class="flex items-center font-bold" (click)="updateBlogPostVote(1)" [disabled]="updateBlogPostVoteButtonLoading || blogPostUserVoteControlIsLoading">
+                @if(blogPostVotedControl === 1){
+                    <i class="pi pi-thumbs-up-fill"></i>
+                } @else {
+                    <i class="pi pi-thumbs-up"></i>
+                }
+                @if(blogPostDetail.data.voteCount>0){
+                    <span class="ml-2">+{{blogPostDetail.data.voteCount}} vote@if(blogPostDetail.data.voteCount>1){s}</span>
+                }
+            </p-button>
+            <p-button severity="secondary" pTooltip="Down vote" variant="text" class="flex items-center font-bold" (click)="updateBlogPostVote(-1)" [disabled]="updateBlogPostVoteButtonLoading || blogPostUserVoteControlIsLoading">
+                @if(blogPostVotedControl === -1){
+                    <i class="pi pi-thumbs-down-fill"></i>
+                } @else {
+                    <i class="pi pi-thumbs-down"></i>
+                }
+                @if(blogPostDetail.data.voteCount<0){
+                    <span class="ml-2">{{blogPostDetail.data.voteCount}} vote@if(blogPostDetail.data.voteCount<-1){s}</span>
+                }
+            </p-button>
+        </div>
+        <div class="flex flex-row items-center">
+            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library"/>
+        </div>
+    </div> 
+
+    <p-divider type="dashed"/>
+    
+    @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
+        <img src="{{environmentApiImageUrl}}/{{blogPostDetail.data.image}}" class="mt-12 mb-12 cursor-pointer" alt="content-image" (click)="showImageContentDialog()">
+
+        <p>
+            photo description
+        </p>
+
+        <p-divider type="dashed"/>
+    }
+
+    <p class="font-lato text-2xl text-left">
+        {{blogPostDetail.data.intro}}    
+    </p>
+
+    <div [innerHTML]="blogPostDetail.data.content" class="font-lato text-2xl w-full whitespace-break-spaces break-words"></div>
+
+    <p-divider type="dashed"/>
+
+    <div class="flex flex-row items-center mt-6">
+        <span class="mr-2">Written by</span>
+        <p class="flex items-center"> <i class="ml-2 pi pi-user mr-2"></i><a class="font-bold cursor-pointer hover:underline" routerLink="/user/{{blogPostDetail.data.username}}/posts">{{blogPostDetail.data.userNickname}}</a>.</p>
+    </div>
+    
+    <div class="flex flex-row items-center justify-between mt-6">
+        <div class="flex flex-row items-center mr-6">
+            <p-button severity="secondary" variant="text" pTooltip="Up vote" class="flex items-center" (click)="updateBlogPostVote(1)" [disabled]="updateBlogPostVoteButtonLoading || blogPostUserVoteControlIsLoading">
+                @if(blogPostVotedControl === 1){
+                    <i class="pi pi-thumbs-up-fill"></i>
+                } @else {
+                    <i class="pi pi-thumbs-up"></i>
+                }
+                @if(blogPostDetail.data.voteCount>0){
+                    <span class="ml-2">+{{blogPostDetail.data.voteCount}} vote@if(blogPostDetail.data.voteCount>1){s}</span>
+                }
+            </p-button>
+            <p-button severity="secondary" variant="text" pTooltip="Down vote" class="flex items-center" (click)="updateBlogPostVote(-1)" [disabled]="updateBlogPostVoteButtonLoading || blogPostUserVoteControlIsLoading">
+                @if(blogPostVotedControl === -1){
+                    <i class="pi pi-thumbs-down-fill"></i>
+                } @else {
+                    <i class="pi pi-thumbs-down"></i>
+                }
+                @if(blogPostDetail.data.voteCount<0){
+                    <span class="ml-2">{{blogPostDetail.data.voteCount}} vote@if(blogPostDetail.data.voteCount<-1){s}</span>
+                }
+            </p-button>
+        </div>
+        <div class="flex flex-row items-center">
+            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library"/>
+        </div>
+    </div> 
+
+    
+
+    
+
+    <!-- <p-divider type="dashed" layout="horizontal" align="left" class="mt-6"><span class="text-2xl font-bold flex items-center">Comments</span></p-divider>
+    <div class="w-full flex flex-col">
+
+        @if(blogPostDetail.data.comments && blogPostDetail.data.comments.length<=0){
+            <p>No comments.</p>
+        }
+
+        @if(blogPostDetail.data.comments === undefined || blogPostDetail.data.comments === null){
+            <p>No comments.</p>
+        }
+
+        @if(blogPostDetail.data.comments && blogPostDetail.data.comments.length>0){
+            <p-table #commentsDt [value]="blogPostDetail.data.comments" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" selectionMode="single" [globalFilterFields]="['content']">
+                <ng-template pTemplate="caption">
+                    <div class="flex">
+                        <p-button variant="text" severity="secondary" icon="pi pi-filter-slash" (click)="clear(commentsDt)" />
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon>
+                                <i class="pi pi-search"></i>
+                            </p-inputicon>
+                            <input pInputText type="text" (input)="onGlobalFilter(commentsDt, $event)" placeholder="Search comment" />
+                        </p-iconfield>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="body" let-comment>
+                    <tr>
+                        <td>{{comment.content}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        }
+    </div> -->
+    
+    
+    <p-dialog [(visible)]="imageContentDialogVisible" draggable="false" resizable="false" modal="true">
+        @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
+            <img src="{{environmentApiImageUrl}}/{{blogPostDetail.data.image}}" class="mt-12 mb-12" alt="content-image">
+        }
+    </p-dialog>
+}
