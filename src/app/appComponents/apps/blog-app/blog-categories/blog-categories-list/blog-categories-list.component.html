@@ -1,0 +1,99 @@
+<div class="w-full flex flex-row justify-between mb-16">
+    <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
+</div>
+
+<div class="mb-6 flex flex-row justify-between w-full">
+    <h2>Tags</h2>    
+</div>
+<!-- 
+@if(blogCategoriesIsLoading){
+    <div class="w-full flex">
+        <i class="pi pi-spin pi-spinner"></i>
+    </div>
+}
+
+@if(!blogCategoriesIsLoading && !blogCategories.data){
+    <p class="font-lato text-xl mb-12 mt-12">No tags found</p>
+} -->
+
+<!-- @if(!blogCategoriesIsLoading && blogCategories.data){
+    <div class="w-full">
+        <p-table #dt [value]="blogCategories.data" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" selectionMode="single" [globalFilterFields]="['title']">
+            <ng-template #caption>
+                <div class="flex">
+                    <p-button variant="text" severity="secondary" icon="pi pi-filter-slash" (click)="clear(dt)" />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search tag" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+            <ng-template #body let-blogCategory>
+                <tr class="cursor-pointer" (click)="goToBlogCategoryContent(blogCategory.slug)">
+                    <td>{{blogCategory.title}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+} -->
+<p-divider type="dashed"/>
+
+@if (blogCategoriesIsLoading) {
+    <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
+}
+
+@if (!blogCategoriesIsLoading && !blogCategories.data) {
+    <p class="font-lato text-xl mb-12 mt-12">No tags found</p>
+}
+
+<div class="w-full flex flex-col items-center">
+    @if (blogCategories.data && blogCategories.data.length>0) {
+        @for (category of blogCategories.data; track $index) {
+            
+            <div class="mb-12 mt-12 rounded-lg cursor-pointer w-full">
+
+                <div class="flex flex-row items-center mb-3">
+                    <a class="cursor-pointer hover:underline flex flex-row items-center text-sm" routerLink="/user/{{category.username}}/posts"><span class="mr-2 text-sm">by</span>{{category.userNickname}} <i class="pi pi-user ml-2"></i></a>
+                </div>
+
+                <div class="flex flex-row mb-6">
+                    <span class="flex flex-row items-center text-sm mr-2"><i class="pi pi-calendar-clock mr-2"></i>{{category.createdAt | date:'MM/dd/yyyy h:mm a z'}}</span>
+                </div>
+
+                <div class="flex flex-row cursor-pointer">
+                    <div class="flex flex-col w-full">
+                        <a class="w-full flex items-center" (click)="goToBlogCategoryContent(category.slug)"><h4 class="font-poppins"><i class="pi pi-tag mr-2"></i>{{category.title}}</h4></a>
+
+                        <p class="font-lato mb-3 mt-3 text-lg">{{category.description}}</p> 
+                    </div>
+                
+                    <!-- @if (category.image && category.image.length>0) {
+                        <div class="w-2/5 overflow-hidden rounded-lg ml-2 h-36">
+                            <img class="hover:opacity-75 h-full w-full object-cover" src="{{environmentApiImageUrl}}/{{category.image}}" (click)="goToBlogCategoryContent(category.slug)" alt="content-image">
+                        </div>
+                    } -->
+                </div>
+        
+                <div class="flex flex-row items-center justify-between mt-6">
+                    <div class="flex flex-row items-center mr-6">
+                        <!--another-components-->
+                    </div>
+                    <div class="flex flex-row items-center">
+                        <p-button icon="pi pi-plus" severity="secondary" variant="text" pTooltip="Follow tag" label="Follow"/>
+                    </div>
+                </div>
+            </div>
+            <p-divider type="dashed"/>
+
+        }
+        @if(loadMoreTagButtonVisible && blogCategories.data && blogCategories.data.length>0){
+            <p-button icon="pi pi-plus" loading="{{blogCategoriesIsLoading}}" severity="secondary" variant="text" pTooltip="Load more" label="Load more" (click)="getAllBlogCategoriesWithScroll()"/>
+        }
+
+        @if(!loadMoreTagButtonVisible && blogCategories.data){
+            <span class="font-lato text-xl">No more tags</span>
+        }
+    }
+</div>
