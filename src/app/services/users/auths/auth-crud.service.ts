@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class AuthCrudService {
 
-  constructor(private httpClient:HttpClient, private router:Router) { }
+  constructor(private httpClient:HttpClient) { }
 
   returnUrl:string="";
 
@@ -33,10 +33,12 @@ export class AuthCrudService {
     return this.httpClient.post<IUserLoginResponseModel>(this.apiUrl + 'signin', userLoginData, { withCredentials: true });
   }
 
-  userLogout(){
+  userLogout():Observable<{message:string}>{
     this.loggedInStatus.next(false);
     
     localStorage.removeItem('authorization');
+
+    return this.httpClient.post<{message:string}>(this.apiUrl+'signout', {}, {withCredentials: true});
   }
 
   // getLoggedUserData(loggedUserRequestData: ILoggedUserDataRequestModel):Observable<ILoggedUserDataResponseModel>{

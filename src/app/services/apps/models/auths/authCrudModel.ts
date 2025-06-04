@@ -26,6 +26,14 @@ interface ILoggedUserDataRequestModel{
     username: string;
 }
 
+interface IUserRolesRequestModel{
+    username: string;
+}
+
+interface IUserRolesResponseModel extends IBaseResponse{
+    data: string[];
+}
+
 interface ILoggedUserDataResponseModel extends IBaseResponse{
     data: {
         userAvatar?: string;
@@ -127,5 +135,7 @@ export type {
     IGetNewUserRecoveryKeyRequestModel,
     IGetNewUserRecoveryKeyResponseModel,
     IPasswordChangeRequestModel,
-    IPasswordChangeResponseModel
+    IPasswordChangeResponseModel,
+    IUserRolesRequestModel,
+    IUserRolesResponseModel
 }

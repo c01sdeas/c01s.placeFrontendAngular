@@ -11,7 +11,8 @@
     <button *ngIf="loggedUserData.length <= 0" pButton [loading]="true" label="Loading user data..." class="p-button-text"></button>
 
     <!--page-content-->
-    <div class="flex flex-col justify-center items-center min-w-[400px]" *ngIf="loggedUserData.length > 0">
+    @if(loggedUserData.length > 0){
+    <div class="flex flex-col justify-center items-center">
         <!-- (onUpload)="onBasicUploadAuto($event)" -->
         <!-- <div class="avatar-container flex flex-col w-full justify-center items-end">
 
@@ -37,7 +38,6 @@
             <button pButton class="p-button-plain p-button-text" icon="pi pi-pencil" label="Change Background" iconPos="right"></button>
         </div> -->
 
-        <div class="w-full mt-5">
             <p-table [value]="loggedUserData" class="w-full">
                 <ng-template pTemplate="body" let-user>
 
@@ -82,7 +82,7 @@
                                                         <small class="mt-2 text-red-400 text-base">! Nickname must be at least 3 characters long.</small>
                                                     }
 
-                                                    <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                    <div class="w-full mt-2 flex flex-row justify-end items-center">
                                                         <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserNicknameDataButtonSpamControl"></button>
 
                                                         <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" (click)="changeUserNicknameData()" [loading]="changeUserNicknameDataButtonSpamControl" [disabled]="changeUserNicknameDataFormGroup.invalid"></button>
@@ -117,7 +117,7 @@
                                                     <small class="mt-2 text-red-400 text-base">! Please enter valid first name.</small>
                                                 }
                     
-                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                <div class="w-full mt-2 flex flex-row justify-end items-center">
                                                     <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserFirstNameDataButtonSpamControl"></button>
 
                                                     <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" (click)="changeUserFirstNameData()" [loading]="changeUserFirstNameDataButtonSpamControl" [disabled]="changeUserFirstNameDataFormGroup.invalid"></button>
@@ -152,7 +152,7 @@
                                                     <small class="mt-2 text-red-400 text-base">! Please enter a valid last name.</small>
                                                 }
 
-                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                <div class="w-full mt-2 flex flex-row justify-end items-center">
                                                     <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserLastNameDataButtonSpamControl"></button>
 
                                                     <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserLastNameDataButtonSpamControl" [disabled]="changeUserLastNameDataFormGroup.invalid" (click)="changeUserLastNameData()"></button>
@@ -187,7 +187,7 @@
                                                     <small class="mt-2 text-red-400 text-base">! Please enter a valid email.</small>
                                                 }
                     
-                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                <div class="w-full mt-2 flex flex-row justify-end items-center">
                                                     <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserEmailDataButtonSpamControl"></button>
 
                                                     <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserEmailDataButtonSpamControl" [disabled]="changeUserEmailDataFormGroup.invalid" (click)="changeUserEmailData()"></button>
@@ -221,7 +221,7 @@
                                                     <small class="mt-2 text-red-400 text-base">! You must be at least 16 years old.</small>
                                                 }
                     
-                                                <div class="w-full mt-2 flex flex-row justify-content-end items-center">
+                                                <div class="w-full mt-2 flex flex-row justify-end items-center">
                                                     <button pButton icon="pi pi-times" class="p-button-text p-button-secondary font-bold" (click)="unSelectUserDataForUpdate()" label="Cancel" [disabled]="changeUserDateOfBirthDataButtonSpamControl"></button>
 
                                                     <button pButton icon="pi pi-check" class="p-button-text p-button-success font-bold" label="Save" [loading]="changeUserDateOfBirthDataButtonSpamControl" [disabled]="changeUserDateOfBirthDataFormGroup.invalid" (click)="changeUserDateOfBirthData()"></button>
@@ -259,9 +259,8 @@
         
                 </ng-template>
             </p-table>
-        </div>
     </div>
-
+    }
 </p-card>
 
 <p-dialog [(visible)]="newRecoveryKeyDialogVisible" header="New recovery key" [modal]="true" [draggable]="false" [resizable]="false" [closable]="false">

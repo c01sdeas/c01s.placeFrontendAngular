@@ -16,33 +16,27 @@ export const authGuard: CanActivateFn = (route, state) => {
   return authCrudService.isLoggedIn().pipe(
     map((isLoggedIn: boolean) => {
       if (isLoggedIn) {
-        // Token varsa decode et
         if (authToken) {
           decodedToken = jwtDecode(authToken);
         }
 
-        // Token geçerli ise kontrol et
         if (decodedToken && decodedToken.exp) {
           const expirationDate = new Date(decodedToken.exp * 1000);
           const isTokenExpired = expirationDate < new Date();
 
           if (isTokenExpired) {
-            // Token süresi dolmuşsa, çıkış yap ve login sayfasına yönlendir
             localStorage.removeItem('authorization');
-            router.navigate(['/auth/login']);
+            router.navigate(['/error/notfound']);
             messageService.add({ severity: 'info', detail: 'Session expired.' });
             return false;
           }
 
-          // Token geçerli ise, girişe izin ver
           return true;
         }
       }
       
-
-      // Token yoksa veya geçerli değilse, giriş yapılmamış
       localStorage.removeItem('authorization');
-      router.navigate(['/auth/login']);
+      router.navigate(['/error/notfound']);
       return false;
     })
   );

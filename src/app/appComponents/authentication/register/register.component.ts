@@ -8,7 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { AuthCrudService } from '../../../services/users/auths/auth-crud.service';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CalendarModule } from 'primeng/calendar';
 import { minAgeValidator } from '../../../../../src/app/validators/signup-validators/signup-form-validator';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -25,7 +25,8 @@ import { DatePickerModule } from 'primeng/datepicker';
     PasswordModule,
     ReactiveFormsModule,
     DialogModule,
-    DatePickerModule
+    DatePickerModule,
+    RouterModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -82,7 +83,6 @@ export class RegisterComponent implements OnInit {
               this.authCrudService.userSignUp(this.signUpFormData.value).subscribe(
                 {
                   next: response => {
-                    console.log(response);
                     this.registrationResponse = response.message;
                     this.showAfterRegistrationDialog();
                   },
@@ -104,7 +104,6 @@ export class RegisterComponent implements OnInit {
           }
         },
         error: response => {
-          console.log(response);
           this.usernameUnavailableControl = true;
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'username is no longer available.' });
         }
@@ -133,7 +132,6 @@ export class RegisterComponent implements OnInit {
   selectValidUsername(){
     
     if (!this.signUpFormData.get('username')!.invalid) {
-      console.log(this.signUpFormData.get('username')!.value);
       this.usernameUnavailableControlBeingChecked = true;
       this.usernameUnavailableControl = undefined;
       setTimeout(() => {
@@ -146,8 +144,7 @@ export class RegisterComponent implements OnInit {
               this.usernameUnavailableControl = true;
             }
           },
-          error: response => {
-            console.log(response);
+          complete: () => {
             this.usernameUnavailableControl = true;
           }
         });
@@ -156,10 +153,6 @@ export class RegisterComponent implements OnInit {
       this.usernameUnavailableControl = undefined;
     }
     
-  }
-
-  goToSignInPage(){
-    this.router.navigateByUrl('/auth/login');
   }
 
   // messages : WritableSignal<Message[]> = signal<Message[]>([]);

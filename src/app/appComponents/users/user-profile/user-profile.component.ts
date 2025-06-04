@@ -88,10 +88,6 @@ export class UserProfileComponent implements OnInit{
       this.changeUserLastNameDataFormGroup.get('newUserLastName')!.setValue(this.loggedUserData[0].data.userLastName);
       this.changeUserEmailDataFormGroup.get('newUserEmail')!.setValue(this.loggedUserData[0].data.userEmail);
       this.changeUserDateOfBirthDataFormGroup.get('newUserDateOfBirth')!.setValue(this.loggedUserData[0].data.userDateOfBirth);
-
-      console.log(response);
-      
-
       this.clearChangeProfileDataSpamControls();
     });
   }

@@ -6,12 +6,13 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { AuthCrudService } from '../../../services/users/auths/auth-crud.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { IUserLoginResponseModel } from '../../../../../src/app/services/apps/models/auths/authCrudModel';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { AppConfigurator } from '../../../layout/component/app.configurator';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,9 @@ import { AppConfigurator } from '../../../layout/component/app.configurator';
     FormsModule,
     PasswordModule,
     ReactiveFormsModule,
-    DialogModule
+    DialogModule,
+    CardModule,
+    RouterModule
     
   ],
   templateUrl: './login.component.html',
@@ -86,8 +89,14 @@ export class LoginComponent {
     });
   }
 
-  goToSignUpPage(){
-    this.router.navigateByUrl('/auth/register');
+  returnUrl : string = "";
+  continueWithoutLoggingIn(){
+    if (this.authCrudService.returnUrl.length > 0) {
+      this.returnUrl = this.authCrudService.returnUrl;
+      this.router.navigateByUrl(this.returnUrl);
+    } else {
+      this.router.navigateByUrl('/');
+    }
   }
 
 

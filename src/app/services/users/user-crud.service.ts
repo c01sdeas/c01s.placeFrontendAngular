@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../src/environments/environment';
-import { IBaseResponse, ILoggedUserDataRequestModel } from '../apps/models/auths/authCrudModel';
+import { IBaseResponse, ILoggedUserDataRequestModel, IUserRolesRequestModel, IUserRolesResponseModel } from '../apps/models/auths/authCrudModel';
 import { IChangeUserDateOfBirthDataRequestModel, IChangeUserDateOfBirthDataResponseModel, IChangeUserEmailDataRequestModel, IChangeUserEmailDataResponseModel, IChangeUserFirstNameDataRequestModel, IChangeUserFirstNameDataResponseModel, IChangeUserLastNameDataRequestModel, IChangeUserLastNameDataResponseModel, IChangeUserNicknameDataRequestModel, IChangeUserNicknameDataResponseModel } from '../apps/models/users/userCrudModel';
 
 @Injectable({
@@ -15,11 +15,15 @@ export class UserCrudService {
   apiUrl : string = environment.apiUrl + 'user/'
 
   getUserThemeData(userThemeRequestData : ILoggedUserDataRequestModel):Observable<boolean>{
-    return this.httpClient.post<boolean>(this.apiUrl + 'get-theme-data', userThemeRequestData, { withCredentials: true });
+    return this.httpClient.post<boolean>(this.apiUrl + 'get-user-theme-data', userThemeRequestData, { withCredentials: true });
   }
 
   changeUserTheme(userThemeRequestData:ILoggedUserDataRequestModel):Observable<IBaseResponse>{
-    return this.httpClient.post<IBaseResponse>(this.apiUrl + 'change-theme-data', userThemeRequestData, { withCredentials: true });
+    return this.httpClient.post<IBaseResponse>(this.apiUrl + 'change-user-theme-data', userThemeRequestData, { withCredentials: true });
+  }
+
+  getUserRolesData(userRolesRequestData:IUserRolesRequestModel):Observable<IUserRolesResponseModel>{
+    return this.httpClient.post<IUserRolesResponseModel>(this.apiUrl + 'get-user-roles-data', userRolesRequestData, { withCredentials: true });
   }
 
   //old-api-way

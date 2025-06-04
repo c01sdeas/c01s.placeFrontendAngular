@@ -53,10 +53,7 @@ export class PasswordRecoveryComponent implements OnInit {
           this.userPasswordRecoveryResponse = response.data;
           this.userPasswordRecoveryResponseDialogVisible = true;
         }
-      },
-      error: err => {
-        console.log(err.error);
-      },
+      }
     });
   }
 
@@ -99,7 +96,6 @@ export class PasswordRecoveryComponent implements OnInit {
               }
             },
             error: err => {
-              console.log(err);
               this.usernameChecked = false;
               if (this.usernameChecked === false) {
                 this.messageService.add({severity: 'error', summary: 'Error', detail: 'Account not found.'});
@@ -118,14 +114,11 @@ export class PasswordRecoveryComponent implements OnInit {
     // userDataForCheckingRecoveryKey.key = this.userPasswordRecoveryFormData.get('userRecoveryKey').value;
     this.authCrudService.checkUserRecoveryKeyForUserPasswordRecovery(this.userPasswordRecoveryFormData.value).subscribe({
       next: response => {
-        console.log(response);
         if (response.success) {
           this.recoveryKeyChecked = true;
           this.messageService.add({severity: 'info', summary: 'Info', detail: 'Key is correct! Please select new password.'});
-          
         }
       }, error: err => {
-        console.log(err);
         this.recoveryKeyChecked = false;
         if (this.recoveryKeyChecked === false) {
           this.messageService.add({severity: 'error', summary: 'Error', detail: 'Key is wrong!'});

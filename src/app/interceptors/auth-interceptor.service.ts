@@ -8,11 +8,9 @@ import { MessageService } from 'primeng/api';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
-  // localStorage'dan token'ı alın
   const token = localStorage.getItem('authorization');
   const messageService = inject(MessageService)
 
-  // Eğer token varsa, authorization başlığına ekleyin
   if (token) {
     const clonedReq = req.clone({
       headers: req.headers.set('authorization', token),
@@ -31,37 +29,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         if (!router.url.includes('/blog/detail') && !router.url.includes('/blog/list')) {
-          messageService.add({severity:'error', summary: 'Error', detail: error.error.message});
-          
-          // localStorage.removeItem('authorization');
-          // router.navigate(['/auth/login']);
+          // messageService.add({severity:'error', summary: 'Error', detail: error.error.message});
           throwError(() => errorMessage);
         }
 
         if (!router.url.includes('/blog/detail') && !router.url.includes('/blog/list') && error.status === 401) {
-          messageService.add({severity:'error', summary: 'Error', detail: 'Unauthorized!'});
-          
-          // localStorage.removeItem('authorization');
-          // router.navigate(['/auth/login']);
+          // messageService.add({severity:'error', summary: 'Error', detail: 'Unauthorized!'});
           throwError(() => errorMessage);
-        }
-        
-
-        console.log(errorMessage);
-        console.log(errorMessage);
-        console.log(errorMessage);
-        console.log(errorMessage);
-        
+        }        
         return throwError(() => errorMessage);
       })
     );
   }
 
-  // Token yoksa orijinal isteği değişmeden gönderin
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Hata durumunda kullanıcıyı login sayfasına yönlendirmek isteyebilirsiniz.
-      // router.navigate(['/auth/login']);      
       return throwError(() => error);
     })
   );

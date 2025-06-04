@@ -12,42 +12,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // let errorMessage = 'An unknown error occurred!';
-
-      // if (error.error instanceof ErrorEvent) {
-      //   // Client-side error
-      //   errorMessage = `Client-side error: ${error.error.message}`;  
-      //   console.log(error);
-        
-      // } else {
-      //   // Server-side error
-      //   // console.log('server side'+error);
-        
-      //   // messageService.add({ severity: 'error', summary: 'Error', detail: errorMessage });
-
-      //   // if (error.error) {
-      //   //   // error.error.errors.forEach(element => {
-      //   //   //   messageService.add({severity: 'error', summary: 'Error', detail: element.message});
-      //   //   // });
-
-      //   //   console.log(error.error);
-          
-      //   // }
-        
-      //   // errorMessage = `Server-side error: ${error.status} - ${error.error.errors[0].message}`;
-
-      //   // errorMessage = `Server-side error: ${error.status} - ${error.message}`;
-        
-        
-      // }
-
-      
-
-      // console.error(errorMessage); // Hataları konsola yaz
-      
-
-      // console.log(error);
-
       if (error.status)
         switch (error.status) {
           case 0:
