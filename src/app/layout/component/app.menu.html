@@ -1,7 +1,8 @@
-<div class="flex flex-col justify-between h-full">
-    <span class="text-3xl font-anta" style="font-family: 'Anta', sans-serif;font-weight: bold;">c01splace</span>
 
-    <p-button label="Sign In" styleClass="w-full" icon="pi pi-sign-in" (onClick)="goToSignInPage()"/>
+<div class="flex flex-col justify-between">
+    <!-- <span class="text-3xl font-anta" style="font-family: 'Anta', sans-serif;font-weight: bold;">c01splace</span> -->
+
+    <!-- <p-button label="Sign In" styleClass="w-full" icon="pi pi-sign-in" (onClick)="goToSignInPage()"/> -->
     
     <ul class="layout-menu">
         <ng-container *ngFor="let item of model; let i = index">
@@ -10,7 +11,9 @@
         </ng-container>
     </ul>
     
-    © {{ currentYear }} c01splace
+    
+
+    <p class="mt-6">© {{ currentYear }} c01splace</p>
 </div>
 
 <!--cookies-->
@@ -44,5 +47,17 @@
   <ng-template pTemplate="footer">
     <p-button label="Save Preferences" (click)="savePreferences()"/>
     <p-button label="Accept All" (click)="acceptAll()" severity="success" icon="pi pi-check"/>
+  </ng-template>
+</p-dialog>
+
+<!--subscribetonews-->
+<p-dialog [(visible)]="subscribeToNewsDialogVisible" modal draggable="false" resizable="false" [styleClass]="'mr-12 ml-12'" dismissableMask="true" appendTo="body" closable="false">
+  <ng-template pTemplate="header">
+    <h4><i class="pi pi-bell mr-2" style="font-size: 1.4rem;"></i>Subscribe to News</h4>
+  </ng-template>
+  <input pInputText [(ngModel)]="emailForSubscribeToNews" placeholder="Enter your email" class="w-full"/>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" severity="secondary" icon="pi pi-times" (click)="hideSubscribeToNewsDialog()"/>
+    <p-button label="Subscribe" severity="success" icon="pi pi-check" (click)="subscribeToNews()" [loading]="loadingSubscribeToNewsButton"/>
   </ng-template>
 </p-dialog>

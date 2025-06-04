@@ -6,10 +6,9 @@ import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import { authGuard } from './app/guards/auth.guard';
 import { BlogAppComponent } from './app/appComponents/apps/blog-app/blog-app.component';
-import { BlogListComponent } from './app/appComponents/apps/blog-app/blog-list/blog-list.component';
-import { BlogDetailComponent } from './app/appComponents/apps/blog-app/blog-detail/blog-detail.component';
+import { BlogListComponent } from './app/appComponents/apps/blog-app/blog-posts/blog-list/blog-list.component';
+import { BlogDetailComponent } from './app/appComponents/apps/blog-app/blog-posts/blog-detail/blog-detail.component';
 import { BlogPannelComponent } from './app/appComponents/apps/blog-app/blog-pannel/blog-pannel.component';
-import { AddNewBlogComponent } from './app/appComponents/apps/blog-app/blog-pannel/add-new-blog/add-new-blog.component';
 import { AuthenticationComponent } from './app/appComponents/authentication/authentication.component';
 import { LoginComponent } from './app/appComponents/authentication/login/login.component';
 import { RegisterComponent } from './app/appComponents/authentication/register/register.component';
@@ -24,7 +23,13 @@ import { BannedErrorComponent } from './app/appComponents/error-pages/banned-err
 import { PrivacyPolicyComponent } from './app/pages/privacy-policy/privacy-policy.component';
 import { TermsOfUseComponent } from './app/pages/terms-of-use/terms-of-use.component';
 import { CookiePolicyComponent } from './app/pages/cookie-policy/cookie-policy.component';
-
+import { BlogCategoriesComponent } from './app/appComponents/apps/blog-app/blog-categories/blog-categories.component';
+import { BlogCategoriesListComponent } from './app/appComponents/apps/blog-app/blog-categories/blog-categories-list/blog-categories-list.component';
+import { BlogCategoryContentComponent } from './app/appComponents/apps/blog-app/blog-categories/blog-category-content/blog-category-content.component';
+import { CreateNewBlogPostComponent } from './app/appComponents/apps/blog-app/blog-pannel/create/create-new-blog-post/create-new-blog-post.component';
+import { CreateNewTagComponent } from './app/appComponents/apps/blog-app/blog-pannel/create/create-new-tag/create-new-tag.component';
+import { CreateComponent } from './app/appComponents/apps/blog-app/blog-pannel/create/create.component';
+import { BlogPostListFromUserComponent } from './app/appComponents/users/blog-post-list-from-user/blog-post-list-from-user.component';
 export const appRoutes: Routes = [
     // {
     //     path: '',
@@ -40,14 +45,14 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: BlogAppComponent, children: [
                 { path: '', component: BlogListComponent },
-                
             ] },
             { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
-            { path: 'user', component: UsersComponent, canActivate: [authGuard], children: [
-                { path: 'profile', component: UserProfileComponent }
+            { path: 'user', component: UsersComponent, children: [
+                { path: ':username/posts', component: BlogPostListFromUserComponent},
+                { path: 'profile', component: UserProfileComponent,canActivate: [authGuard] }
             ]},
             
             // { path: 'apps', component: AppsComponent },
@@ -58,12 +63,22 @@ export const appRoutes: Routes = [
                     { path: 'blog', component: BlogAppComponent, children: [
                         { path: 'list', component: BlogListComponent },
                         { path: ':slug', component: BlogDetailComponent },
-                        { path: 'pannel', component: BlogPannelComponent, children: [
-                            { path: 'add', component: AddNewBlogComponent }
-                        ] }
+
+                        
                         
                         //admin-panel
                     ] },
+                    { path: 'tag', component: BlogCategoriesComponent, children: [
+                        { path: 'list', component: BlogCategoriesListComponent },
+                        { path: ':slug', component: BlogCategoryContentComponent},
+                        { path: ':slug/post/:slug', component: BlogDetailComponent},
+                        
+                    ] },
+                    
+                    { path: 'create', component: CreateComponent, canActivate:[authGuard], children: [
+                        { path: 'post', component: CreateNewBlogPostComponent },
+                        { path: 'tag', component: CreateNewTagComponent },
+                    ] }
                 ]
             },
         ]

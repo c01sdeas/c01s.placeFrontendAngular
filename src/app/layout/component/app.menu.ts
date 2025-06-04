@@ -9,21 +9,27 @@ import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { AuthCrudService } from '../../services/users/auths/auth-crud.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
+import { BlogPostsCrudService } from '../../services/apps/blogApp/blog-posts-crud.service';
+import { ISubscribeToNewsRequestData } from '../../services/apps/models/apps/blogApp/blogPostsCrudModel';
 
 @Component({
     selector: 'app-menu',
     standalone: true,
-    imports: [CommonModule, AppMenuitem, RouterModule, ToggleSwitchModule, ButtonModule, FormsModule, DialogModule],
+    imports: [CommonModule, AppMenuitem, RouterModule, ToggleSwitchModule, ButtonModule, FormsModule, DialogModule, InputTextModule],
     templateUrl: './app.menu.html',
 })
 export class AppMenu {
-    constructor (private cookieService:CookieService, private authCrudService:AuthCrudService, private router:Router){}
+    constructor (private cookieService:CookieService, private authCrudService:AuthCrudService, private router:Router, private messageService:MessageService, private blogPostsCrudService:BlogPostsCrudService){}
 
     currentYear: number = new Date().getFullYear();
 
     model: MenuItem[] = [];
 
     ngOnInit() {
+        const cookieConsent = this.cookieService.get('cookieConsent');
+        this.preferences = JSON.parse(cookieConsent);
         this.model = [
             // {
             //     label: 'authentication',
@@ -35,7 +41,29 @@ export class AppMenu {
                 label: 'Home',
                 items: [
                     { label: 'News', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-                    { label: 'Blog', icon: 'pi pi-fw pi-home', routerLink: ['/blog/list'] },
+                    { label: 'Tags', icon: 'pi pi-fw pi-tag', routerLink: ['/tag/list'] },
+                    // { label: 'Blog', icon: 'pi pi-fw pi-home', routerLink: ['/blog/list'] },
+                    // { label: 'News', icon: 'pi pi-fw pi-home', routerLink: ['/news/list'] }
+                ]
+            },
+            {
+                label: 'Updates',
+                items: [
+                    {
+                        label: 'Subscribe to our news...',
+                        icon: 'pi pi-fw pi-bell',
+                        command: _ => this.showSubscribeToNewsDialog()
+                    }
+
+                ]
+            },
+            {
+                label: 'Other platforms',
+                items: [
+                    { label: 'Pinterest', icon: 'pi pi-fw pi-pinterest', url: 'https://www.pinterest.com/c01splace', target: '_blank' },
+                    { label: 'Instagram', icon: 'pi pi-fw pi-instagram', url: 'https://www.instagram.com/c01splace', target: '_blank' },
+                    { label: 'X', icon: 'pi pi-fw pi-twitter', url: 'https://www.x.com/c01splace', target: '_blank' },
+                    // { label: 'Blog', icon: 'pi pi-fw pi-home', routerLink: ['/blog/list'] },
                     // { label: 'News', icon: 'pi pi-fw pi-home', routerLink: ['/news/list'] }
                 ]
             },
@@ -231,17 +259,18 @@ export class AppMenu {
     showPreferencesDialog = false;
 
     preferences = {
-        essential: true, // Her zaman açık
+        essential: true, // always active
         analytics: true,
         ads: true
     };
     savePreferences() {
         this.cookieService.set('cookieConsent', JSON.stringify(this.preferences), 365);
+        const cookieConsent = this.cookieService.get('cookieConsent');
+        this.preferences = JSON.parse(cookieConsent);
         this.showPreferencesDialog = false;
         // Burada tercihlere göre script yükleyebilirsin
         this.loadOrRemoveAnalyticsScripts();
         this.loadOrRemoveAdScripts();
-        
     }
 
     loadOrRemoveAnalyticsScripts() {
@@ -275,5 +304,37 @@ export class AppMenu {
     goToSignInPage(){
         this.authCrudService.returnUrl = this.router.url;
         this.router.navigateByUrl('/auth/login');
+    }
+
+
+    subscribeToNewsDialogVisible:boolean=false;
+    showSubscribeToNewsDialog(){
+        this.subscribeToNewsDialogVisible=true;
+    }
+    hideSubscribeToNewsDialog(){
+        this.subscribeToNewsDialogVisible=false;
+    }
+    emailForSubscribeToNews:string='';
+    loadingSubscribeToNewsButton:boolean=false;
+    subscribeToNews(){
+        this.loadingSubscribeToNewsButton=true;
+        const data : ISubscribeToNewsRequestData={} as ISubscribeToNewsRequestData;
+        data.email=this.emailForSubscribeToNews;
+        this.blogPostsCrudService.subscribeToNews(data).subscribe({
+            next: (response:any) => {
+                if(response.success){
+                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'You have successfully subscribed to our news.' });
+                    this.hideSubscribeToNewsDialog();
+                }
+            },
+            error: (error:any) => {
+                this.messageService.add({ severity: 'info', summary: 'Info', detail: 'You have already subscribed to our news.' });
+                this.hideSubscribeToNewsDialog();
+            },
+            complete: () => {
+                this.loadingSubscribeToNewsButton=false;
+                this.emailForSubscribeToNews='';
+            }
+        });
     }
 }

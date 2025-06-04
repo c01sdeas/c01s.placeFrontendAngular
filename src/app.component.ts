@@ -7,6 +7,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { CookieConsentComponent } from "./app/pages/cookie-consent/cookie-consent.component";
 import { filter } from 'rxjs';
 import { ScrollTopModule } from 'primeng/scrolltop';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-root',
@@ -22,13 +23,14 @@ import { ScrollTopModule } from 'primeng/scrolltop';
 export class AppComponent {
     showCookieConsent = true;
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private titleService:Title) {
         this.router.events.pipe(
         filter(event => event instanceof NavigationEnd)
         ).subscribe((event: NavigationEnd) => {
-        // Route'a göre gösterme kararını burada ver
+        
         const hiddenRoutes = ['/privacy-policy', '/terms-of-use', '/cookie-policy']; // Gerekirse diğer sayfaları da ekle
         this.showCookieConsent = !hiddenRoutes.includes(event.urlAfterRedirects);
+        this.titleService.setTitle("c01splace");
         });
     }
 }

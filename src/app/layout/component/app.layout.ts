@@ -15,7 +15,7 @@ import { LayoutService } from '../service/layout.service';
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
-            <div class="layout-main">
+            <div class="layout-main mt-12">
                 <router-outlet></router-outlet>
             </div>
             <app-footer></app-footer>

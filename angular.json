@@ -26,9 +26,10 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
+                            "src/favicon.png",
                             {
                                 "glob": "**/*",
-                                "input": "public"
+                                "input": "src/public"
                             }
                         ],
                         "styles": [
@@ -85,9 +86,10 @@
                         "tsConfig": "tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
+                            "src/favicon.png",
                             {
                                 "glob": "**/*",
-                                "input": "public"
+                                "input": "src/public"
                             }
                         ],
                         "styles": [
