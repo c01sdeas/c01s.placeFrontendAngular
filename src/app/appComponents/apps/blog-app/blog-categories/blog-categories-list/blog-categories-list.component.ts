@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { IBlogCategoryResponseData, IBlogCategoryResponseListData, IGetAllBlogCategoriesRequestData } from '../../../../../services/apps/models/apps/blogApp/blogCategoriesCrudModel';
+import { IBlogCategoryResponseListData, IGetAllBlogCategoriesRequestDto } from '../../../../../models/apps/blogApp/blogPosts/blogCategoriesCrudModel';
 import { BlogCategoriesCrudService } from '../../../../../services/apps/blogApp/blog-categories-crud.service';
 import { Table } from 'primeng/table';
 import { TableModule } from 'primeng/table';
@@ -17,6 +17,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Title } from '@angular/platform-browser';
 import { environment } from '../../../../../../environments/environment';
 import { MessageService } from 'primeng/api';
+import { BlogLibrariesService } from '../../../../../services/apps/blogApp/blog-libraries.service';
+import { IBooleanResponse } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { AuthCrudService } from '../../../../../services/users/auths/auth-crud.service';
 
 @Component({
   selector: 'app-blog-categories-list',
@@ -26,9 +29,10 @@ import { MessageService } from 'primeng/api';
 })
 export class BlogCategoriesListComponent implements OnInit{
 
-  constructor(private blogCategoriesCrudService: BlogCategoriesCrudService, private router:Router, private location:Location, private titleService:Title, private messageService:MessageService){}
+  constructor(private blogCategoriesCrudService: BlogCategoriesCrudService, private router:Router, private location:Location, private titleService:Title, private messageService:MessageService, private blogLibrariesService:BlogLibrariesService, private authCrudService:AuthCrudService){}
 
   ngOnInit(): void {
+    this.titleService.setTitle("Tags - c01splace");
       this.getAllBlogCategories();
   }
 
@@ -38,23 +42,24 @@ export class BlogCategoriesListComponent implements OnInit{
     this.location.back();
   }
 
-  getAllBlogCategoriesData:IGetAllBlogCategoriesRequestData={page:1,limit:10};
+  getAllBlogCategoriesData:IGetAllBlogCategoriesRequestDto={page:1,limit:10};
   blogCategories: IBlogCategoryResponseListData = {} as IBlogCategoryResponseListData;
   blogCategoriesIsLoading : boolean = false;
   getAllBlogCategories(){
       this.blogCategoriesIsLoading = true;
       this.blogCategoriesCrudService.getAllBlogCategories(this.getAllBlogCategoriesData).subscribe({
           next: (res:IBlogCategoryResponseListData) => {
-              this.blogCategories = res;
-              console.log(res);
-              
-              // this.blogCategories.data = this.blogCategories.data.filter((category:IBlogCategoryResponseListData) => category.status);
+              this.blogCategories = res;          
+              this.blogCategories.data = this.blogCategories.data.filter(category => category.status);
               this.blogCategoriesIsLoading = false;
-              this.titleService.setTitle("Tags - c01splace");
           },
           error: (error:any) => {
               this.blogCategoriesIsLoading = false;
           },
+          complete: () => {
+            this.blogCategoriesIsLoading = false;
+            this.followTagButtonSpamControl.splice(this.followTagButtonSpamControl.indexOf(this.followTagButtonSpamControlData!), 1);
+          }
       });
   }
 
@@ -65,7 +70,7 @@ export class BlogCategoriesListComponent implements OnInit{
     this.blogCategoriesCrudService.getAllBlogCategories(this.getAllBlogCategoriesData).subscribe({
       next: (res:IBlogCategoryResponseListData) => {
         if(res.data)
-          this.blogCategories.data.push(...res.data);
+          this.blogCategories.data.push(...res.data.filter(category => category.status));
         else {
           this.messageService.add({severity:'warn', summary:'No more categories', detail:'No more categories to load.'});
         }
@@ -87,17 +92,50 @@ export class BlogCategoriesListComponent implements OnInit{
   goToBlogCategoryContent(slug:string){
       this.router.navigate(['/tag/', slug]);
   }
-
-  @ViewChild('dt') dt!: Table;
-
-  onGlobalFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    if (this.dt) {
-      this.dt.filterGlobal(value, 'contains');
-    } 
+  
+  followTagButtonSpamControl:string[] = [];
+  followTagButtonSpamControlData:string|undefined;
+  followTag(tagID:string){
+    if(localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined){
+      this.authCrudService.returnUrl = this.location.path();
+      this.router.navigateByUrl('/auth/login');
+      return;
+    }
+    this.followTagButtonSpamControlData=tagID;
+    this.followTagButtonSpamControl.push(tagID);
+    this.blogLibrariesService.createNewFollowingTagService({tagID}).subscribe({
+      next: (res:IBooleanResponse) => {
+        this.messageService.add({severity:'success', summary:'Success', detail:'Tag followed successfully'});
+        this.getAllBlogCategories();
+      },
+      error: (error:any) => {
+        this.messageService.add({severity:'error', summary:'Error', detail:'Failed to follow tag'});
+      },
+      complete: () => {
+        this.getAllBlogCategories();
+      }
+    });
+  }
+  unfollowTag(tagID:string){
+    if(localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined){
+      this.authCrudService.returnUrl = this.location.path();
+      this.router.navigateByUrl('/auth/login');
+      return;
+    }
+    this.followTagButtonSpamControlData=tagID;
+    this.followTagButtonSpamControl.push(tagID);
+    this.blogLibrariesService.updateFollowingTagStatusService({tagID}).subscribe({
+      next: (res:IBooleanResponse) => {
+        this.messageService.add({severity: 'info', summary:'Success', detail:'Tag unfollowed successfully'});
+        this.getAllBlogCategories();
+      },
+      error: (error:any) => {
+        this.messageService.add({severity:'error', summary:'Error', detail:'Failed to unfollow tag'});
+      },
+      complete: () => {
+        this.getAllBlogCategories();
+      }
+    })
   }
 
-  clear(table: Table) {
-      table.clear();
-  }
 }

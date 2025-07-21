@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { AuthCrudService } from '../../../services/users/auths/auth-crud.service';
 import { Router, RouterModule } from '@angular/router';
-import { IUserLoginResponseModel } from '../../../../../src/app/services/apps/models/auths/authCrudModel';
+import { IUserLoginResponseDto } from '../../../models/auths/authCrudModel';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
@@ -52,7 +52,7 @@ export class LoginComponent {
 
   userLoginFormData!: FormGroup;
   
-  userLoginResponse : IUserLoginResponseModel | undefined;
+  userLoginResponse : IUserLoginResponseDto | undefined;
   signInButtonSpam : boolean = false;
   login(){
     this.signInButtonSpam = true;

@@ -1,3 +1,7 @@
+<div class="w-full flex flex-row justify-between items-center mb-16">
+    <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
+</div>
+
 <h3>Tell a story</h3>
 
 <form [formGroup]="createNewPostFormData" (ngSubmit)="createPost()">
@@ -28,26 +32,81 @@
         <div class="flex flex-col w-full">
             <div>
                 <label for="title" class="text-md mb-2">Title</label>
-                <input type="text" pInputText id="title" placeholder="title..." class="w-full mb-12" formControlName="title"/>
+                <input type="text" pInputText id="title" placeholder="title..." class="w-full mb-6" formControlName="title"/>
             </div>
 
             <div>
                 <label for="meta" class="text-md mb-2">Meta</label>
-                <input type="text" pInputText id="meta" placeholder="meta..." class="w-full mb-12" formControlName="meta"/>
+                <textarea rows="5" cols="30" pTextarea id="meta" placeholder="meta..." class="w-full mb-6" formControlName="meta"></textarea>
             </div>
 
             <div>
                 <label for="intro" class="text-md mb-2">Intro</label>
-                <input type="text" pInputText id="intro" placeholder="intro..." class="w-full mb-12" formControlName="intro"/>
+                <textarea rows="5" cols="30" pTextarea id="intro" placeholder="intro..." class="w-full mb-6" formControlName="intro"></textarea>
             </div>
 
             <div>
                 <label for="content" class="text-md mb-2">Content</label>
-                <p-editor id="content" [style]="{ height: '320px' }" formControlName="content"/>
+                <p-editor id="content" [style]="{ height: '320px' }" formControlName="content">
+                    <ng-template pTemplate="header">
+                        <!-- QuillJS' expected toolbar structure -->
+                        <span class="ql-formats">
+                          <!-- Text Formatting -->
+                          <button class="ql-bold" aria-label="Bold"></button>
+                          <button class="ql-italic" aria-label="Italic"></button>
+                          <button class="ql-underline" aria-label="Underline"></button>
+                          <button class="ql-strike" aria-label="Strike"></button>
+                    
+                          <!-- Headers / Sizes -->
+                          <select class="ql-header" aria-label="Heading">
+                            <option value="1"></option> <!-- H1 -->
+                            <option value="2"></option> <!-- H2 -->
+                            <option value="3"></option> <!-- H3 -->
+                            <option value=""></option>  <!-- Normal Paragraph -->
+                          </select>
+                          <select class="ql-size" aria-label="Size">
+                            <option value="small"></option>
+                            <option value=""></option> <!-- Default size -->
+                            <option value="large"></option>
+                            <option value="huge"></option>
+                          </select>
+                    
+                          <!-- Lists -->
+                          <!-- <button class="ql-list" value="ordered" aria-label="Ordered List"></button> -->
+                          <button class="ql-list" value="bullet" aria-label="Unordered List"></button>
+                    
+                          <!-- Alignment -->
+                          <select class="ql-align" aria-label="Align"></select>
+                    
+                          <!-- Link, Picture, Video -->
+                          <button class="ql-link" aria-label="Link"></button>
+                          <button class="ql-image" aria-label="Image"></button>
+                          <!-- <button class="ql-video" aria-label="Video"></button> -->
+                    
+                          <!-- Blockquote, Code Block -->
+                          <button class="ql-blockquote" aria-label="Blockquote"></button>
+                          <button class="ql-code-block" aria-label="Code Block"></button>
+                    
+                          <!-- Clear Formatting -->
+                          <button class="ql-clean" aria-label="Clear Formatting"></button>
+                        </span>
+                    
+                        <!-- You can add your own PrimeNG buttons or other HTML elements here -->
+                        <!-- Example: -->
+                        <!-- <p-button label="Custom Button" icon="pi pi-star" (onClick)="myCustomEditorAction()"></p-button> -->
+                    
+                      </ng-template>
+                </p-editor>
             </div>
         </div>          
 
-        <p-button label="Create" (click)="createPost()" styleClass="w-full mt-6"/>
+        <p-button label="Create post" (click)="createPost()" styleClass="w-full mt-6" loading="{{createPostButtonDisabled}}" icon="pi pi-check" severity="success" disabled="{{createPostButtonDisabled}}"/>
+
+        <p-dialog header="Success! After your writing has been reviewed, a decision will be made regarding its approval." [(visible)]="yourPostWillApproveDialogVisible" [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '50vw'}">
+            <div class="w-full flex flex-row items-center justify-end">
+                <p-button icon="pi pi-check" severity="secondary" variant="text" label="Done" (click)="hideYourPostWillApproveDialog()" routerLink="/user/library/my-stories"/>
+            </div>
+        </p-dialog>
         
     </p-card>
 </form>

@@ -140,11 +140,9 @@ export class RegisterComponent implements OnInit {
           next: response => {
             if (response.success) {
               this.usernameUnavailableControl = false;
-            } else {
-              this.usernameUnavailableControl = true;
             }
           },
-          complete: () => {
+          error: () => {
             this.usernameUnavailableControl = true;
           }
         });

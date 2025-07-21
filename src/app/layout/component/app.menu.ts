@@ -12,7 +12,9 @@ import { AuthCrudService } from '../../services/users/auths/auth-crud.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
 import { BlogPostsCrudService } from '../../services/apps/blogApp/blog-posts-crud.service';
-import { ISubscribeToNewsRequestData } from '../../services/apps/models/apps/blogApp/blogPostsCrudModel';
+import { ISubscribeToNewsRequestDto } from '../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { ILoggedUserDataResponseDto, IUserRolesRequestDto } from '../../models/auths/authCrudModel';
+import { UserCrudService } from '../../services/users/user-crud.service';
 
 @Component({
     selector: 'app-menu',
@@ -21,15 +23,54 @@ import { ISubscribeToNewsRequestData } from '../../services/apps/models/apps/blo
     templateUrl: './app.menu.html',
 })
 export class AppMenu {
-    constructor (private cookieService:CookieService, private authCrudService:AuthCrudService, private router:Router, private messageService:MessageService, private blogPostsCrudService:BlogPostsCrudService){}
+    constructor (private cookieService:CookieService, private authCrudService:AuthCrudService, private router:Router, private messageService:MessageService, private blogPostsCrudService:BlogPostsCrudService, private userCrudService:UserCrudService){}
 
     currentYear: number = new Date().getFullYear();
 
     model: MenuItem[] = [];
 
+    userMenuModel: MenuItem[] = [];
+
     ngOnInit() {
-        const cookieConsent = this.cookieService.get('cookieConsent');
-        this.preferences = JSON.parse(cookieConsent);
+        this.authCrudService._signedInData.subscribe(data => {
+            this.sessionUserData = data;
+            if (this.sessionUserData && this.sessionUserData.data && this.userMenuModel.filter(item => item.label === '@' + this.sessionUserData.data.username).length === 0) {
+
+                this.userMenuModel.unshift({
+                    label: '@' + this.sessionUserData.data.username,
+                    items: [
+                        { label: 'My Libraries', icon: 'pi pi-fw pi-book', routerLink: ['/user/library/list'] },
+                        { label: 'My Stories', icon: 'pi pi-fw pi-book', routerLink: ['/user/library/my-stories'] },
+                        { label: 'Account', icon: 'pi pi-fw pi-cog', routerLink: ['/user/profile'] },
+                    ]
+                });
+
+                const userRolesRequestData : IUserRolesRequestDto = {} as IUserRolesRequestDto;
+                userRolesRequestData.username = this.sessionUserData.data.username;
+                this.userCrudService.getUserRolesData(userRolesRequestData).subscribe(response => {
+                    this.userRolesData = response.data;
+                    if ((this.userRolesData.includes('admin') || this.userRolesData.includes('moderator')) && this.userMenuModel.filter(item => item.label === 'Moderate').length === 0) {
+                        this.userMenuModel.unshift({
+                            label: 'Moderate',
+                            items: [
+                                { label: 'Check Stories', icon: 'pi pi-fw pi-book', routerLink: ['/moderate/stories'] },
+                                { label: 'Check Tags', icon: 'pi pi-fw pi-tag', routerLink: ['/moderate/tags'] },
+                                // { label: 'Users', icon: 'pi pi-fw pi-user', routerLink: ['/admin/users'] },
+                                // { label: 'Roles', icon: 'pi pi-fw pi-user', routerLink: ['/admin/roles'] },
+                                // { label: 'Libraries', icon: 'pi pi-fw pi-user', routerLink: ['/admin/libraries'] },
+                                // { label: 'Settings', icon: 'pi pi-fw pi-user', routerLink: ['/admin/settings'] },
+                            ]
+                        });
+                    }
+                });
+            }
+        });
+        let cookieConsent : string = '';
+        if (this.cookieService.get('cookieConsent')) {
+            cookieConsent = this.cookieService.get('cookieConsent');
+            this.preferences = JSON.parse(cookieConsent);
+        }
+        
         this.model = [
             // {
             //     label: 'authentication',
@@ -37,10 +78,23 @@ export class AppMenu {
             //         { label: 'Sign In', styleClass: 'font-bold', icon: 'pi pi-fw pi-sign-in', routerLink: ['/auth/login'], command: _ => this.authCrudService.returnUrl = this.router.url },
             //     ]
             // },
+            
+            {
+                label: 'Write',
+                items: [
+                    { label: 'Write a new story', icon: 'pi pi-fw pi-pencil', routerLink: ['/create/post'] },
+                ]
+            },
+            {
+                label: 'Search',
+                items: [
+                    { label: 'Search in stories', icon: 'pi pi-fw pi-search', routerLink: ['/search'] },
+                ]
+            },
             {
                 label: 'Home',
                 items: [
-                    { label: 'News', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
+                    { label: 'Stories', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
                     { label: 'Tags', icon: 'pi pi-fw pi-tag', routerLink: ['/tag/list'] },
                     // { label: 'Blog', icon: 'pi pi-fw pi-home', routerLink: ['/blog/list'] },
                     // { label: 'News', icon: 'pi pi-fw pi-home', routerLink: ['/news/list'] }
@@ -268,31 +322,31 @@ export class AppMenu {
         const cookieConsent = this.cookieService.get('cookieConsent');
         this.preferences = JSON.parse(cookieConsent);
         this.showPreferencesDialog = false;
-        // Burada tercihlere göre script yükleyebilirsin
+        // Here you can load scripts according to preferences
         this.loadOrRemoveAnalyticsScripts();
         this.loadOrRemoveAdScripts();
     }
 
     loadOrRemoveAnalyticsScripts() {
         if (this.preferences.analytics) {
-        // Google Analytics kodunu yükle
+        // Google Analytics codes
         const script = document.createElement('script');
         script.async = true;
         script.src = 'https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y';
         document.head.appendChild(script);
-        // ... diğer analitik kodları
+        // ... other analytics codes
         } else {
-        // Google Analytics veya ilgili çerezleri sil
+        // Google Analytics codes or related cookies remove
         // ...
         }
     }
 
     loadOrRemoveAdScripts() {
         if (this.preferences.ads) {
-        // Reklam scriptlerini yükle
+        // Ad scripts
         // ...
         } else {
-        // Reklam çerezlerini sil
+        // Ad scripts or related cookies remove
         // ...
         }
     }
@@ -306,6 +360,8 @@ export class AppMenu {
         this.router.navigateByUrl('/auth/login');
     }
 
+    sessionUserData : ILoggedUserDataResponseDto = {} as ILoggedUserDataResponseDto;
+    userRolesData : string[] = [];
 
     subscribeToNewsDialogVisible:boolean=false;
     showSubscribeToNewsDialog(){
@@ -318,7 +374,7 @@ export class AppMenu {
     loadingSubscribeToNewsButton:boolean=false;
     subscribeToNews(){
         this.loadingSubscribeToNewsButton=true;
-        const data : ISubscribeToNewsRequestData={} as ISubscribeToNewsRequestData;
+        const data : ISubscribeToNewsRequestDto={} as ISubscribeToNewsRequestDto;
         data.email=this.emailForSubscribeToNews;
         this.blogPostsCrudService.subscribeToNews(data).subscribe({
             next: (response:any) => {

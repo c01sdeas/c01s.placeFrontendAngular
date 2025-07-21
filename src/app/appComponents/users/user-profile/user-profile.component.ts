@@ -6,18 +6,18 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { TableModule } from 'primeng/table';
 import { AuthCrudService } from '../../../services/users/auths/auth-crud.service';
-import { IGetNewUserRecoveryKeyRequestModel, IGetNewUserRecoveryKeyResponseModel, ILoggedUserDataRequestModel, ILoggedUserDataResponseModel, IPasswordChangeRequestModel, IUserLoginResponseModel, IUserTokenResponseModel } from '../../../../../src/app/services/apps/models/auths/authCrudModel';
 import { FileUploadModule } from 'primeng/fileupload';
 import { jwtDecode } from 'jwt-decode';
 import { DialogModule } from 'primeng/dialog';
 import { UserCrudService } from '../../../services/users/user-crud.service';
 import { MessageService } from 'primeng/api';
-import { IChangeUserDateOfBirthDataRequestModel, IChangeUserEmailDataRequestModel, IChangeUserFirstNameDataRequestModel, IChangeUserLastNameDataRequestModel, IChangeUserNicknameDataRequestModel } from '../../../../../src/app/services/apps/models/users/userCrudModel';
 import { FieldsetModule } from 'primeng/fieldset';
-import { CalendarModule } from 'primeng/calendar';
 import { minAgeValidator } from '../../../../../src/app/validators/signup-validators/signup-form-validator';
 import { CardModule } from 'primeng/card';
 import { DatePickerModule } from 'primeng/datepicker';
+import { IGetNewUserRecoveryKeyRequestDto, IGetNewUserRecoveryKeyResponseDto, ILoggedUserDataRequestDto, ILoggedUserDataResponseDto, IPasswordChangeRequestDto, IUserTokenResponseDto } from '../../../models/auths/authCrudModel';
+import { IChangeUserDateOfBirthDataRequestDto, IChangeUserEmailDataRequestDto, IChangeUserFirstNameDataRequestDto, IChangeUserLastNameDataRequestDto, IChangeUserNicknameDataRequestDto } from '../../../models/users/userCrudModel';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-profile',
@@ -41,10 +41,11 @@ import { DatePickerModule } from 'primeng/datepicker';
 })
 export class UserProfileComponent implements OnInit{
 
-  constructor (private authCrudService:AuthCrudService, private formBuilder:FormBuilder, private userCrudService:UserCrudService, private messageService:MessageService) {}
+  constructor (private authCrudService:AuthCrudService, private formBuilder:FormBuilder, private userCrudService:UserCrudService, private messageService:MessageService, private titleService:Title) {}
 
   ngOnInit(): void {
     this.getLoggedUserData();
+    this.titleService.setTitle("Account - c01splace");
 
     this.changeUserDateOfBirthDataFormGroup = this.formBuilder.group({
       newUserDateOfBirth: ['', [Validators.required, minAgeValidator(16)]],
@@ -73,10 +74,10 @@ export class UserProfileComponent implements OnInit{
     });
   }
 
-  decodedToken : IUserTokenResponseModel = {} as IUserTokenResponseModel;
-  loggedUserData : ILoggedUserDataResponseModel[] = [];
+  decodedToken : IUserTokenResponseDto = {} as IUserTokenResponseDto;
+  loggedUserData : ILoggedUserDataResponseDto[] = [];
   getLoggedUserData() {
-    const loggedUserRequestData: ILoggedUserDataRequestModel = {} as ILoggedUserDataRequestModel;
+    const loggedUserRequestData: ILoggedUserDataRequestDto = {} as ILoggedUserDataRequestDto;
     this.decodedToken = jwtDecode(localStorage.getItem('authorization')!);
     loggedUserRequestData.username = this.decodedToken.username;
     this.authCrudService.getLoggedUserData(loggedUserRequestData).subscribe(response => {
@@ -97,7 +98,7 @@ export class UserProfileComponent implements OnInit{
   selectedUserDataForUpdate : string = '';
   selectUserDataForUpdate(userData:string){
     this.selectedUserDataForUpdate = userData;
-    console.log(userData);
+    (userData);
   }
   unSelectUserDataForUpdate(){
     this.selectedUserDataForUpdate = '';
@@ -128,13 +129,13 @@ export class UserProfileComponent implements OnInit{
   }
 
   getNewUserRecoveryKeySpamControl : boolean = false;
-  newRecoveryKeyResponseData : IGetNewUserRecoveryKeyResponseModel = {} as IGetNewUserRecoveryKeyResponseModel;
+  newRecoveryKeyResponseData : IGetNewUserRecoveryKeyResponseDto = {} as IGetNewUserRecoveryKeyResponseDto;
   getNewUserRecoveryKey(){
     this.getNewUserRecoveryKeySpamControl = true;
     setTimeout(() => {
       this.getNewUserRecoveryKeySpamControl = false;
     }, 5000);
-    const userDataForNewRecoveryKey : IGetNewUserRecoveryKeyRequestModel = {} as IGetNewUserRecoveryKeyRequestModel;
+    const userDataForNewRecoveryKey : IGetNewUserRecoveryKeyRequestDto = {} as IGetNewUserRecoveryKeyRequestDto;
     userDataForNewRecoveryKey.username = this.decodedToken.username;
     this.authCrudService.getNewUserRecoveryKey(userDataForNewRecoveryKey).subscribe({
       next: response => {
@@ -173,7 +174,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserNicknameDataButtonSpamControl = false;
     }, 5000);
-    const data : IChangeUserNicknameDataRequestModel = {} as IChangeUserNicknameDataRequestModel;
+    const data : IChangeUserNicknameDataRequestDto = {} as IChangeUserNicknameDataRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.newUserNickname = this.changeUserNicknameDataFormGroup.get('newUserNickname')!.value;
     if (this.changeUserNicknameDataFormGroup.valid) {
@@ -210,7 +211,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserFirstNameDataButtonSpamControl = false;
     }, 5000);
-    const data : IChangeUserFirstNameDataRequestModel = {} as IChangeUserFirstNameDataRequestModel;
+    const data : IChangeUserFirstNameDataRequestDto = {} as IChangeUserFirstNameDataRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.newUserFirstName = this.changeUserFirstNameDataFormGroup.get('newUserFirstName')!.value;
     if (this.changeUserFirstNameDataFormGroup.valid) {
@@ -245,7 +246,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserLastNameDataButtonSpamControl = false;
     }, 5000);
-    const data : IChangeUserLastNameDataRequestModel = {} as IChangeUserLastNameDataRequestModel;
+    const data : IChangeUserLastNameDataRequestDto = {} as IChangeUserLastNameDataRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.newUserLastName = this.changeUserLastNameDataFormGroup.get('newUserLastName')!.value;
     if (this.changeUserLastNameDataFormGroup.valid) {
@@ -280,7 +281,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserEmailDataButtonSpamControl = false;
     }, 5000);
-    const data : IChangeUserEmailDataRequestModel = {} as IChangeUserEmailDataRequestModel;
+    const data : IChangeUserEmailDataRequestDto = {} as IChangeUserEmailDataRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.newUserEmail = this.changeUserEmailDataFormGroup.get('newUserEmail')!.value;
     if (this.changeUserEmailDataFormGroup.valid) {
@@ -315,7 +316,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserDateOfBirthDataButtonSpamControl = false;
     }, 5000);
-    const data : IChangeUserDateOfBirthDataRequestModel = {} as IChangeUserDateOfBirthDataRequestModel;
+    const data : IChangeUserDateOfBirthDataRequestDto = {} as IChangeUserDateOfBirthDataRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.newUserDateOfBirth = this.changeUserDateOfBirthDataFormGroup.get('newUserDateOfBirth')!.value;
     if (this.changeUserDateOfBirthDataFormGroup.valid) {
@@ -359,7 +360,7 @@ export class UserProfileComponent implements OnInit{
     setTimeout(() => {
       this.changeUserPasswordDataButtonSpamControl = false;
     }, 5000);
-    const data : IPasswordChangeRequestModel = {} as IPasswordChangeRequestModel;
+    const data : IPasswordChangeRequestDto = {} as IPasswordChangeRequestDto;
     data.username = this.loggedUserData[0].data.username;
     data.oldUserPassword = this.changeUserPasswordDataFormGroup.get('oldUserPassword')!.value;
     data.newUserPassword = this.changeUserPasswordDataFormGroup.get('newUserPassword')!.value;
@@ -370,7 +371,7 @@ export class UserProfileComponent implements OnInit{
         this.userPasswordsDifferentControl = true;
       } else {
         this.userPasswordsDifferentControl = false;
-        console.log('şifre değişti');
+        ('şifre değişti');
         
         this.authCrudService.passwordChangeService(data).subscribe({
           next: response => {

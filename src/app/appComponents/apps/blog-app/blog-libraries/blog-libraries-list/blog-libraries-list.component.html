@@ -1,0 +1,144 @@
+
+<div class="w-full flex flex-row justify-between items-center mb-16">
+    <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
+    <p-button icon="pi pi-book" variant="text" label="My stories" size="large" routerLink="/user/library/my-stories"/>
+</div>
+
+<!--saveToBlogLibrary-->
+<p-card>
+    <div class="flex flex-col items-center">
+        <div class="flex flex-row w-full justify-between items-center mb-6">
+            <h4>
+            @if(temporaryblogPostID.length == 0){
+                Libraries
+            } @else {
+                Save to library
+            }
+            </h4>
+
+            @if(!createNewLibraryVisible){
+                <p-button icon="pi pi-plus" severity="secondary" variant="text" label="Create new" pTooltip="Create new library" (click)="showCreateNewLibrary()"/>
+            }
+        </div>
+
+        @if(!createNewLibraryVisible){
+            <div class="w-full flex flex-row justify-end items-center mb-6">
+                <p-button icon="pi pi-tag" variant="text" severity="secondary" label="Show Followed Tags" (click)="showFollowedTagsDialog()"/>
+            </div>
+        }
+
+        
+        <p-divider type="dashed"></p-divider>
+        @if(createNewLibraryVisible){
+            <div class="flex flex-col w-full">
+                <div class="w-full mb-6">
+                    <span for="newLibraryName" class="mb-2 block">Library name</span>
+                    <input class="w-full" #newLibraryName pInputText type="text" placeholder="Library name" [(ngModel)]="createNewLibraryRequestData.title"/>
+                </div>
+                <div class="w-full mb-6">
+                    <span for="newLibraryDescription" class="mb-2 block">Library description</span>
+                    <input class="w-full" #newLibraryDescription pInputText type="text" placeholder="Library description" [(ngModel)]="createNewLibraryRequestData.description"/>
+                </div>
+                <div class="flex flex-row justify-end w-full">
+                    <p-button icon="pi pi-times" severity="secondary" variant="text" label="Cancel" pTooltip="Cancel" (click)="hideCreateNewLibrary()"/>
+                    <p-button icon="pi pi-check" variant="text" label="Create" pTooltip="Create" (click)="createNewLibrary()"/>
+                </div>
+            </div>
+        } @else {
+            @if(blogLibraries.data){
+                @if(blogLibraries.data.length>0){
+                    <p-table [value]="blogLibraries.data" [loading]="blogLibrariesIsLoading" [scrollable]="true" [scrollHeight]="'400px'" selectionMode="single" class="w-full" [scrollable]="true" scrollHeight="flex">
+                        <ng-template pTemplate="body" let-library>
+                            <tr class="cursor-pointer h-20">
+                                <td>
+                                    <div class="flex flex-row items-center">
+                                        <span class="font-bold">{{library.title}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row items-center">
+                                        <span>{{library.description}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="w-full flex flex-row justify-end items-center">
+                                        
+                                        @if(library.status){
+                                            @if(temporaryblogPostID.length>0){
+                                                <td>
+                                                    <div class="flex flex-row items-center">
+                                                        
+                                                            @if(library.blogPostInLibraryID && library.blogPostInLibraryID.length>0 && library.blogPostInLibraryID == temporaryblogPostID){
+                                                                <p-button severity="secondary" icon="pi pi-check" (click)="removeFromLibrary(library.id)" variant="outlined" disabled="{{saveToLibraryButtonLoading}}"/>
+                                                            } @else {
+                                                                <p-button severity="secondary" icon="pi pi-plus" (click)="saveToLibrary(library.id)" variant="outlined" disabled="{{saveToLibraryButtonLoading}}"/>
+                                                            }
+                                                        
+                                                    </div>
+                                                </td>
+                                            } @else {
+                                                <p-button icon="pi pi-arrow-right" variant="text" routerLink="/user/library/{{library.id}}" class="mr-6" pTooltip="Go to library"/>
+                                                <p-button severity="danger" icon="pi pi-trash" variant="text" (click)="showDeleteLibraryDialog(library.id)" pTooltip="Delete library"/>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    @if(temporaryblogPostID.length>0){
+                        <div class="w-full flex flex-row justify-end mt-6">
+                            <p-button icon="pi pi-check" severity="secondary" label="Done" (click)="doneForSaveToLibrary()"/>
+                        </div>
+                    }
+                }
+                @if(blogLibraries.data.length==0 && blogLibrariesIsLoading==false){
+                    <p>No libraries found</p>
+                }
+            }
+        }
+        
+        @if(blogLibrariesIsLoading && !blogLibraries.data){
+            <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
+        }
+    </div>
+</p-card>
+
+<p-dialog header="Followed Tags" [(visible)]="followedTagsDialogVisible" [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '50vw'}">
+    
+    
+    <div class="mt-6">
+        @if((!followedTagsIsLoading && !followedTags.data) || (!followedTagsIsLoading && followedTags.data && followedTags.data.length==0)){
+            <span>No followed tags found.</span>
+        } 
+        <p-table [value]="followedTags.data" [loading]="followedTagsIsLoading" [scrollable]="true" [scrollHeight]="'400px'" class="w-full" [scrollable]="true" scrollHeight="flex">
+            <ng-template pTemplate="body" let-tag>
+                <tr class="cursor-pointer h-20">
+                    <td>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold">{{tag.tagTitle}}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-row items-center">
+                            <span>{{tag.tagDescription}}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-row items-center">
+                            <p-button icon="pi pi-times" severity="secondary" variant="text" label="Unfollow" (click)="removeFromFollowedTags(tag.tagID)" [disabled]="removeFromFollowedTagsButtonSpamControl"/>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</p-dialog>
+
+<p-dialog header="Delete Library" [(visible)]="deleteLibraryDialogVisible" [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '50vw'}">
+    <p>Are you sure you want to delete this library?</p>
+    <div class="w-full flex flex-row justify-end mt-6">
+        <p-button icon="pi pi-times" severity="secondary" variant="text" label="Cancel" (click)="hideDeleteLibraryDialog()" [disabled]="deleteLibraryButtonSpamControl"/>
+        <p-button icon="pi pi-trash" variant="text" severity="danger" label="Delete" (click)="deleteLibrary()" [disabled]="deleteLibraryButtonSpamControl"/>
+    </div>
+</p-dialog>

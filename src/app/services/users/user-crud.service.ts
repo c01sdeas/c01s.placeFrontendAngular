@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../src/environments/environment';
-import { IBaseResponse, ILoggedUserDataRequestModel, IUserRolesRequestModel, IUserRolesResponseModel } from '../apps/models/auths/authCrudModel';
-import { IChangeUserDateOfBirthDataRequestModel, IChangeUserDateOfBirthDataResponseModel, IChangeUserEmailDataRequestModel, IChangeUserEmailDataResponseModel, IChangeUserFirstNameDataRequestModel, IChangeUserFirstNameDataResponseModel, IChangeUserLastNameDataRequestModel, IChangeUserLastNameDataResponseModel, IChangeUserNicknameDataRequestModel, IChangeUserNicknameDataResponseModel } from '../apps/models/users/userCrudModel';
+import { IBaseResponse, ILoggedUserDataRequestDto, IUserRolesRequestDto, IUserRolesResponseDto } from '../../models/auths/authCrudModel';
+import { IChangeUserDateOfBirthDataRequestDto, IChangeUserDateOfBirthDataResponseDto, IChangeUserEmailDataRequestDto, IChangeUserEmailDataResponseDto, IChangeUserFirstNameDataRequestDto, IChangeUserFirstNameDataResponseDto, IChangeUserLastNameDataRequestDto, IChangeUserLastNameDataResponseDto, IChangeUserNicknameDataRequestDto, IChangeUserNicknameDataResponseDto } from '../../models/users/userCrudModel';
 
 @Injectable({
   providedIn: 'root'
@@ -12,18 +12,18 @@ export class UserCrudService {
 
   constructor(private httpClient:HttpClient) { }
 
-  apiUrl : string = environment.apiUrl + 'user/'
+  apiUrl : string = environment.apiUrl + 'user/';
 
-  getUserThemeData(userThemeRequestData : ILoggedUserDataRequestModel):Observable<boolean>{
+  getUserThemeData(userThemeRequestData : ILoggedUserDataRequestDto):Observable<boolean>{
     return this.httpClient.post<boolean>(this.apiUrl + 'get-user-theme-data', userThemeRequestData, { withCredentials: true });
   }
 
-  changeUserTheme(userThemeRequestData:ILoggedUserDataRequestModel):Observable<IBaseResponse>{
+  changeUserTheme(userThemeRequestData:ILoggedUserDataRequestDto):Observable<IBaseResponse>{
     return this.httpClient.post<IBaseResponse>(this.apiUrl + 'change-user-theme-data', userThemeRequestData, { withCredentials: true });
   }
 
-  getUserRolesData(userRolesRequestData:IUserRolesRequestModel):Observable<IUserRolesResponseModel>{
-    return this.httpClient.post<IUserRolesResponseModel>(this.apiUrl + 'get-user-roles-data', userRolesRequestData, { withCredentials: true });
+  getUserRolesData(userRolesRequestData:IUserRolesRequestDto):Observable<IUserRolesResponseDto>{
+    return this.httpClient.post<IUserRolesResponseDto>(this.apiUrl + 'get-user-roles-data', userRolesRequestData, { withCredentials: true });
   }
 
   //old-api-way
@@ -31,24 +31,24 @@ export class UserCrudService {
   //   return this.httpClient.post(this.apiUrl + 'update-user-profile', updateUserData, { responseType: 'text' });
   // }
 
-  changeUserNicknameData(data:IChangeUserNicknameDataRequestModel):Observable<IChangeUserNicknameDataResponseModel>{
-    return this.httpClient.post<IChangeUserNicknameDataResponseModel>(this.apiUrl + 'change-user-nickname-data', data, {withCredentials: true});
+  changeUserNicknameData(data:IChangeUserNicknameDataRequestDto):Observable<IChangeUserNicknameDataResponseDto>{
+    return this.httpClient.post<IChangeUserNicknameDataResponseDto>(this.apiUrl + 'change-user-nickname-data', data, {withCredentials: true});
   }
 
-  changeUserFirstNameData(data:IChangeUserFirstNameDataRequestModel):Observable<IChangeUserFirstNameDataResponseModel>{
-    return this.httpClient.post<IChangeUserFirstNameDataResponseModel>(this.apiUrl + 'change-user-firstname-data', data, {withCredentials: true});
+  changeUserFirstNameData(data:IChangeUserFirstNameDataRequestDto):Observable<IChangeUserFirstNameDataResponseDto>{
+    return this.httpClient.post<IChangeUserFirstNameDataResponseDto>(this.apiUrl + 'change-user-firstname-data', data, {withCredentials: true});
   }
 
-  changeUserLastNameData(data:IChangeUserLastNameDataRequestModel):Observable<IChangeUserLastNameDataResponseModel>{
-    return this.httpClient.post<IChangeUserLastNameDataResponseModel>(this.apiUrl + 'change-user-lastname-data', data, {withCredentials: true});
+  changeUserLastNameData(data:IChangeUserLastNameDataRequestDto):Observable<IChangeUserLastNameDataResponseDto>{
+    return this.httpClient.post<IChangeUserLastNameDataResponseDto>(this.apiUrl + 'change-user-lastname-data', data, {withCredentials: true});
   }
 
-  changeUserEmailData(data:IChangeUserEmailDataRequestModel):Observable<IChangeUserEmailDataResponseModel>{
-    return this.httpClient.post<IChangeUserEmailDataResponseModel>(this.apiUrl + 'change-user-email-data', data, {withCredentials: true});
+  changeUserEmailData(data:IChangeUserEmailDataRequestDto):Observable<IChangeUserEmailDataResponseDto>{
+    return this.httpClient.post<IChangeUserEmailDataResponseDto>(this.apiUrl + 'change-user-email-data', data, {withCredentials: true});
   }
 
-  changeUserDateOfBirthData(data:IChangeUserDateOfBirthDataRequestModel):Observable<IChangeUserDateOfBirthDataResponseModel>{
-    return this.httpClient.post<IChangeUserDateOfBirthDataResponseModel>(this.apiUrl+'change-user-date-of-birth-data', data, {withCredentials:true});
+  changeUserDateOfBirthData(data:IChangeUserDateOfBirthDataRequestDto):Observable<IChangeUserDateOfBirthDataResponseDto>{
+    return this.httpClient.post<IChangeUserDateOfBirthDataResponseDto>(this.apiUrl+'change-user-date-of-birth-data', data, {withCredentials:true});
   }
 
 }

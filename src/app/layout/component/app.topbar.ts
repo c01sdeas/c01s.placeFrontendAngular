@@ -6,9 +6,8 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AuthCrudService } from '../../services/users/auths/auth-crud.service';
-import { ILoggedUserDataRequestModel, ILoggedUserDataResponseModel, IUserLoginResponseModel, IUserRolesRequestModel, IUserRolesResponseModel, IUserTokenResponseModel } from '../../services/apps/models/auths/authCrudModel';
 import { UserCrudService } from '../../services/users/user-crud.service';
-import { userThemeData } from '../../services/apps/models/users/userCrudModel';
+import { userThemeData } from '../../models/users/userCrudModel';
 import { jwtDecode } from 'jwt-decode';
 import { MegaMenuModule } from 'primeng/megamenu';
 import { ButtonModule } from 'primeng/button';
@@ -21,6 +20,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
+import { ILoggedUserDataRequestDto, ILoggedUserDataResponseDto, IUserRolesRequestDto, IUserTokenResponseDto } from '../../models/auths/authCrudModel';
 
 @Component({
     selector: 'app-topbar',
@@ -33,16 +33,48 @@ export class AppTopbar {
     
     constructor(public layoutService: LayoutService, private authCrudService:AuthCrudService, private userCrudService:UserCrudService, private router:Router, private messageService:MessageService, private formBuilder:FormBuilder, private cookieService:CookieService) { }
     token : any = '';
-    decodedToken : IUserTokenResponseModel = {} as IUserTokenResponseModel;
-    loggedUserRequestData : ILoggedUserDataRequestModel = {} as ILoggedUserDataRequestModel;
+    decodedToken : IUserTokenResponseDto = {} as IUserTokenResponseDto;
+    loggedUserRequestData : ILoggedUserDataRequestDto = {} as ILoggedUserDataRequestDto;
     ngOnInit(): void {
         if (localStorage.getItem('authorization')) {
             this.token = localStorage.getItem('authorization');
             this.decodedToken = jwtDecode(this.token);
-            
+            if (this.decodedToken.username) this.loadingUserDataButton = true;
             if (this.decodedToken) {
                 this.loggedUserRequestData.username = this.decodedToken.username;                
-                this.getUserData();
+                this.authCrudService.getLoggedUserData(this.loggedUserRequestData).subscribe({
+
+                    next: response => {
+                        this.loggedUserData = response;
+                        this.authCrudService._signedInData.subscribe(response => {
+                            if (response) {
+                                this.getUserThemeData();
+                                this.loggedUserData = response;
+        
+                                this.signedInDataMenuIitems = [
+                                    {
+                                        label: '@'+response.data.username,
+                                        items: [
+                                            { label: 'Account', icon: 'pi pi-fw pi-cog', routerLink: '/user/profile' }, 
+                                            { label: 'Sign Out', icon: 'pi pi-fw pi-sign-out', command: () => this.signOut() }
+                                        ]
+                                    }
+                                    
+                                ];
+        
+                                this.loadingUserDataButton=false;
+        
+                                this.getUserRolesData();
+                            }
+                        });
+                    },
+                    error: () => {
+                        localStorage.removeItem('authorization');
+                        location.reload();
+                    }
+        
+                    
+                });
             }
         } else {
             if (!this.router.url.includes('blog') && !this.router.url.includes('tag') && !this.router.url.includes('user')) {
@@ -55,49 +87,11 @@ export class AppTopbar {
 
     }
 
-    loggedUserData : ILoggedUserDataResponseModel = {} as ILoggedUserDataResponseModel;
+    loggedUserData : ILoggedUserDataResponseDto = {} as ILoggedUserDataResponseDto;
     
     loadingUserDataButton : boolean = false;
     
     signedInDataMenuIitems : MenuItem[] = [];
-    getUserData() {
-        if (this.decodedToken.username) {
-            this.loadingUserDataButton = true;
-        }
-        this.authCrudService.getLoggedUserData(this.loggedUserRequestData).subscribe({
-
-            next: response => {                
-                this.loggedUserData = response;
-                this.authCrudService._signedInData.subscribe(response => {
-                    if (response) {
-                        this.getUserThemeData();
-                        this.loggedUserData = response;
-
-                        this.signedInDataMenuIitems = [
-                            {
-                                label: '@'+response.data.username,
-                                items: [
-                                    { label: 'Account', icon: 'pi pi-fw pi-cog', routerLink: '/user/profile' }, 
-                                    { label: 'Sign Out', icon: 'pi pi-fw pi-sign-out', command: () => this.signOut() }
-                                ]
-                            }   
-                            
-                        ];
-
-                        this.loadingUserDataButton=false;
-
-                        this.getUserRolesData();
-                    }
-                });
-            },
-            error: () => {
-                localStorage.removeItem('authorization');
-                location.reload();
-            }
-
-            
-        });
-    }
 
     sidebarForSettings : boolean = false;
     showSidebarForSettings(){
@@ -118,16 +112,18 @@ export class AppTopbar {
     lightsSwitch:boolean = false;
     signOut(){
         this.lightsSwitch = false;
-        this.authCrudService.userLogout();
-        this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: true }));
-        // if (!this.router.url.includes('blog/detail') && !this.router.url.includes('blog/list')) this.router.navigate(['/auth/login']);
-        // else location.reload();
-        location.reload();
+        this.authCrudService.userLogout().subscribe(res=>{
+            this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: true }));
+            // if (!this.router.url.includes('blog/detail') && !this.router.url.includes('blog/list')) this.router.navigate(['/auth/login']);
+            // else location.reload();
+            location.reload();
+        });
+        
     }
 
     userThemeData : userThemeData = {} as userThemeData;
     getUserThemeData() {
-        const userThemeRequestData : ILoggedUserDataRequestModel = {} as ILoggedUserDataRequestModel;
+        const userThemeRequestData : ILoggedUserDataRequestDto = {} as ILoggedUserDataRequestDto;
         userThemeRequestData.username = this.decodedToken.username;
         this.userCrudService.getUserThemeData(userThemeRequestData).subscribe(response => {            
             if(response === true){
@@ -141,14 +137,14 @@ export class AppTopbar {
     }
 
     changeUserThemeData(){
-        const changeUserDataRequestData : ILoggedUserDataRequestModel = {} as ILoggedUserDataRequestModel;
+        const changeUserDataRequestData : ILoggedUserDataRequestDto = {} as ILoggedUserDataRequestDto;
         changeUserDataRequestData.username = this.decodedToken.username;
         this.userCrudService.changeUserTheme(changeUserDataRequestData).subscribe();
     }
 
     userRolesData : string[] = [];
     getUserRolesData(){
-        const userRolesRequestData : IUserRolesRequestModel = {} as IUserRolesRequestModel;
+        const userRolesRequestData : IUserRolesRequestDto = {} as IUserRolesRequestDto;
         userRolesRequestData.username = this.decodedToken.username;
         this.userCrudService.getUserRolesData(userRolesRequestData).subscribe(response => {
             this.userRolesData = response.data;

@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
-import { IBlogResponseData, IBooleanResponse, IGetBlogPostBySlugRequestData, IGetBlogPostUserVoteControlRequestData, IGetBlogPostUserVoteControlResponseData, IGetBlogPostVotesRequestData, IGetBlogPostVotesResponseData, IUpdateBlogPostUserVotesRequestData } from '../../../../../services/apps/models/apps/blogApp/blogPostsCrudModel';
+import { IBlogResponseDto, IBooleanResponse, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { BlogPostsCrudService } from '../../../../../services/apps/blogApp/blog-posts-crud.service';
 import { CommonModule, Location } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
@@ -18,6 +18,10 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Title } from '@angular/platform-browser';
 import { AuthCrudService } from '../../../../../services/users/auths/auth-crud.service';
 import { environment } from '../../../../../../environments/environment';
+import { BlogLibrariesService } from '../../../../../services/apps/blogApp/blog-libraries.service';
+import { UserCrudService } from '../../../../../services/users/user-crud.service';
+import { IUserRolesResponseDto } from '../../../../../models/auths/authCrudModel';
+import { Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-blog-detail',
@@ -42,31 +46,44 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class BlogDetailComponent implements OnInit {
 
-  constructor(private activatedRoute:ActivatedRoute, private blogPostService:BlogPostsCrudService, private location:Location, private router:Router, private titleService:Title, private authCrudService:AuthCrudService, private messageService:MessageService){}
+  constructor(private activatedRoute:ActivatedRoute, private blogPostService:BlogPostsCrudService, private location:Location, private router:Router, private titleService:Title, private authCrudService:AuthCrudService, private messageService:MessageService, private blogLibrariesService:BlogLibrariesService, private userCrudService:UserCrudService, private meta:Meta){}
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
       this.getBlogPostBySlugData.slug = params.get('slug')!;
       this.getBlogPostBySlug();
-      this.getSessionUsername();
-
     });
   }
-
+  
   environmentApiImageUrl:string=environment.apiImageUrl;
+  @ViewChild('blogContentRef') blogContentRef!: ElementRef;
+  fixImageSrcs() {
+    if (!this.blogContentRef) return;
+  
+    const images = this.blogContentRef.nativeElement.querySelectorAll('img');
+    images.forEach((img: HTMLImageElement) => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        this.showImageContentDialog(img.src);
+      });
+    });
+  }
 
   locationBack() {
     this.location.back();
   }
 
-  blogPostDetail:IBlogResponseData = {} as IBlogResponseData;
-  getBlogPostBySlugData:IGetBlogPostBySlugRequestData = {slug:''};
+  blogPostDetail:IBlogResponseDto = {} as IBlogResponseDto;
+  getBlogPostBySlugData:IGetBlogPostBySlugRequestDto = {slug:''};
   blogPostDetailIsLoading:boolean=false;
   getBlogPostBySlug() {
     this.blogPostDetailIsLoading=true;
     this.blogPostService.getBlogPostBySlug(this.getBlogPostBySlugData).subscribe({
-      next: (response:IBlogResponseData) => {
+      next: (response:IBlogResponseDto) => {
         this.blogPostDetail = response;
+        if (response.data.status === false) this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+        this.getSessionUsername();
+        this.updateBlogPostViewCount(this.blogPostDetail.data.id);
       },
       error: (error:any) => {
         this.router.navigateByUrl('/error/notfound');
@@ -75,16 +92,20 @@ export class BlogDetailComponent implements OnInit {
       complete: () => {
         this.getBlogPostVoteCount();
         this.getBlogPostUserVoteControl();
+        setTimeout(() => {
+          this.fixImageSrcs();
+        }, 1);
         this.blogPostDetailIsLoading=false;
-        this.titleService.setTitle(this.blogPostDetail.data.title+' - c01splace');
+        if(this.blogPostDetail.data) this.titleService.setTitle(this.blogPostDetail.data.title+' - c01splace');
       }
     });
   }
 
   imageContentDialogVisible:boolean=false;
   imageContentDialogData:string="";
-  showImageContentDialog(){
+  showImageContentDialog(imageSrc:string){
     this.imageContentDialogVisible = true;
+    this.imageContentDialogData = imageSrc;
   }
   hideImageContentDialog(){
     this.imageContentDialogVisible = false;
@@ -96,9 +117,9 @@ export class BlogDetailComponent implements OnInit {
   getBlogPostUserVoteControl(){
     this.blogPostUserVoteControlIsLoading=true;
     if (this.blogPostDetail.data && this.sessionUsername) {
-      const blogPostUserVoteControlData:IGetBlogPostUserVoteControlRequestData = {blogID:this.blogPostDetail.data.id, username:this.sessionUsername};
+      const blogPostUserVoteControlData:IGetBlogPostUserVoteControlRequestDto = {blogPostID:this.blogPostDetail.data.id, username:this.sessionUsername};
       this.blogPostService.getBlogPostUserVoteControl(blogPostUserVoteControlData).subscribe({
-        next: (response:IGetBlogPostUserVoteControlResponseData) => {
+        next: (response:IGetBlogPostUserVoteControlResponseDto) => {
           this.blogPostUserVoteControlIsLoading=false;
           this.blogPostVotedControl=response.data;
         },
@@ -116,21 +137,21 @@ export class BlogDetailComponent implements OnInit {
   }
 
   //updateVotes
-  blogPostVoteCount:IGetBlogPostVotesResponseData = {} as IGetBlogPostVotesResponseData;
+  blogPostVoteCount:IGetBlogPostVotesResponseDto = {} as IGetBlogPostVotesResponseDto;
   blogPostVotedControl:number=0;
   getBlogPostVoteCount(){
     if (!this.blogPostDetail.data) {
       return;
     }
-    const blogPostVoteCountData:IGetBlogPostVotesRequestData = {blogID:this.blogPostDetail.data.id};
+    const blogPostVoteCountData:IGetBlogPostVotesRequestDto = {blogPostID:this.blogPostDetail.data.id};
     this.blogPostService.getBlogPostVoteCount(blogPostVoteCountData).subscribe({
-      next: (response:IGetBlogPostVotesResponseData) => {
+      next: (response:IGetBlogPostVotesResponseDto) => {
         this.blogPostVoteCount = response;
         this.blogPostDetail.data.voteCount=response.data;
         this.updateBlogPostVoteButtonLoading = false;
       },
       error: (error:any) => {
-        console.log(error);
+        (error);
         this.updateBlogPostVoteButtonLoading = false;
       },
       complete: () => {
@@ -144,7 +165,53 @@ export class BlogDetailComponent implements OnInit {
     if (!localStorage.getItem('authorization')) {
       return;
     }
-    this.authCrudService._signedInData.subscribe(response=>{if(response){this.sessionUsername=response.data.username;this.getBlogPostUserVoteControl();}});
+    this.authCrudService._signedInData.subscribe(response=>{
+      if(response){
+        this.sessionUsername=response.data.username;
+        this.getBlogPostUserVoteControl();
+        this.getUserRolesData();
+      }
+    });
+  }
+
+  userRolesData:string[]=[];
+  getUserRolesData(){
+    this.userCrudService.getUserRolesData({username:this.sessionUsername}).subscribe({
+      next: (response:IUserRolesResponseDto) => {
+        this.userRolesData=response.data;
+        if (this.blogPostDetail.data && this.blogPostDetail.data.status==false && (this.userRolesData.includes('admin') || this.userRolesData.includes('moderator'))) {
+          this.menuItems = [
+            {
+              label: 'Approve',
+              icon: 'pi pi-check',
+              command: () => this.showUpdateBlogPostStatusDialog()
+            },
+            // {
+            //   label: 'Delete',
+            //   icon: 'pi pi-trash',
+            //   command: () => this.showDeleteBlogPostDialog()
+            // }
+          ];
+        }
+        else if (this.blogPostDetail.data && this.blogPostDetail.data.status==true && (this.userRolesData.includes('admin') || this.userRolesData.includes('moderator'))) {
+          this.menuItems = [
+            {
+              label: 'Reject',
+              icon: 'pi pi-times',
+              command: () => this.showUpdateBlogPostStatusDialog()
+            },
+            // {
+            //   label: 'Delete',
+            //   icon: 'pi pi-trash',
+            //   command: () => this.showDeleteBlogPostDialog()
+            // }
+          ];
+        }
+      },
+      error: (error:any) => {
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Error fetching user roles.'})
+      }
+    });
   }
 
   //updateBlogPostVote
@@ -160,7 +227,7 @@ export class BlogDetailComponent implements OnInit {
     
     this.updateBlogPostVoteButtonLoading = true;
     if (this.blogPostDetail.data && this.sessionUsername) {
-      const updateBlogPostVoteData:IUpdateBlogPostUserVotesRequestData = {blogID:this.blogPostDetail.data.id, username:this.sessionUsername, vote:vote};
+      const updateBlogPostVoteData:IUpdateBlogPostUserVotesRequestDto = {blogPostID:this.blogPostDetail.data.id, username:this.sessionUsername, vote:vote};
       this.blogPostService.updateBlogPostVote(updateBlogPostVoteData).subscribe({
         next: (response:IBooleanResponse) => {
           this.getBlogPostVoteCount();
@@ -168,7 +235,7 @@ export class BlogDetailComponent implements OnInit {
           this.messageService.add({severity:'success', summary: 'Success!'});
         },
         error: (error:any) => {
-          console.log(error);
+          (error);
           this.messageService.add({severity:'error', summary:'Error!'});
           if(error.status==401 || this.sessionUsername=="" || this.sessionUsername==null || this.sessionUsername==undefined){
             this.authCrudService.returnUrl = this.location.path();
@@ -183,6 +250,27 @@ export class BlogDetailComponent implements OnInit {
     }
   }
 
+  updateBlogPostViewCount(id:string){
+    this.blogPostService.updateBlogPostViewCount({id}).subscribe({
+      next: (response:IBooleanResponse) => {
+      },
+      error: (error:any) => {
+      }
+    });
+  }
+  
+  saveToLibrary(blogPostID:string){
+    if(localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined || this.sessionUsername == "" || this.sessionUsername == null || this.sessionUsername == undefined){
+      this.authCrudService.returnUrl = this.location.path();
+      this.router.navigateByUrl('/auth/login');
+      return;
+    }
+    this.blogLibrariesService.temporarySaveToLibraryData = blogPostID;
+    this.authCrudService.returnUrl = this.location.path();
+    
+    this.router.navigateByUrl('/user/library/list');
+  }
+
   //comments
   clear(table:Table){
     table.clear();
@@ -192,21 +280,75 @@ export class BlogDetailComponent implements OnInit {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
-  menuItems:MenuItem[] = [
-    {
-        label: 'Post Options',
-        items: [
-            {
-                label: 'Edit',
-                icon: 'pi pi-pencil'
-            },
-            {
-                label: 'Delete',
-                icon: 'pi pi-trash'
-            }
-        ]
-    }
-  ];
+  //menu
+  menuItems:MenuItem[] = [];
+
+  updateAndDeleteBlogPostSpamControl: boolean = false;
+
+  showDeleteBlogPostDialog(){
+    this.deleteBlogPostDialogVisible = true;
+  }
+
+  deleteBlogPostDialogVisible : boolean = false;
+
+  deleteBlogPost(){
+    this.deleteBlogPostDialogVisible = false;
+    this.updateAndDeleteBlogPostSpamControl=true;
+    this.blogPostService.deleteBlogPost({id:this.blogPostDetail.data.id}).subscribe({
+      next: (response:IBooleanResponse) => {
+        this.messageService.add({severity:'success', summary: 'Success!'});
+        this.getBlogPostBySlug();
+      },
+      error: (error:any) => {
+        (error);
+        this.messageService.add({severity:'error', summary:'Error!'});
+        if(error.status==401 || this.sessionUsername=="" || this.sessionUsername==null || this.sessionUsername==undefined){
+          this.authCrudService.returnUrl = this.location.path();
+          this.router.navigateByUrl('/auth/login');
+        }
+      },
+      complete: () => {
+        this.deleteBlogPostDialogVisible = false;
+        this.updateAndDeleteBlogPostSpamControl=false;
+      }
+    });
+  }
+
+  hideDeleteBlogPostDialog(){
+    this.deleteBlogPostDialogVisible = false;
+  }
+
+  updateBlogPostStatusDialogVisible : boolean = false;
+
+  showUpdateBlogPostStatusDialog(){
+    this.updateBlogPostStatusDialogVisible = true;
+  }
+
+  hideUpdateBlogPostStatusDialog(){
+    this.updateBlogPostStatusDialogVisible = false;
+  }
+
+  updateBlogPostStatus(){
+    this.updateAndDeleteBlogPostSpamControl=true;
+    this.blogPostService.updateBlogPostStatus({id:this.blogPostDetail.data.id}).subscribe({
+      next: (response:IBooleanResponse) => {
+        this.messageService.add({severity:'success', summary: 'Success!', detail:'Blog post status updated successfully.'});
+        this.getBlogPostBySlug();
+      },
+      error: (error:any) => {
+        (error);
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Error updating blog post status.'});
+        if(error.status==401 || this.sessionUsername=="" || this.sessionUsername==null || this.sessionUsername==undefined){
+          this.authCrudService.returnUrl = this.location.path();
+          this.router.navigateByUrl('/auth/login');
+        }
+      },
+      complete: () => {
+        this.updateBlogPostStatusDialogVisible = false;
+        this.updateAndDeleteBlogPostSpamControl=false;
+      }
+    });
+  }
 
   
 }

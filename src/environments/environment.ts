@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/t-app/',
-  apiImageUrl: 'http://localhost:3000/uploads'
+  apiImageUrl: 'http://localhost:3000/'
 };
 
 /*

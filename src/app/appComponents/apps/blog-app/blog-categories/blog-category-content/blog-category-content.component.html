@@ -1,10 +1,10 @@
 <div class="w-full flex flex-row justify-between mb-16">
     <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
 
-    <div>
+    @if(userRolesData.data && (userRolesData.data.includes('admin') || userRolesData.data.includes('moderator'))){
         <p-menu #menu [model]="menuItems" [popup]="true" />
         <p-button (click)="menu.toggle($event)" variant="text" severity="secondary" icon="pi pi-ellipsis-v"/>
-    </div>
+    }
 </div>
 
 <div class="mb-6 flex flex-col justify-between w-full">
@@ -27,7 +27,11 @@
 
 
         <div class="flex flex-row items-center justify-end">
-            <p-button icon="pi pi-plus" label="Follow" severity="secondary" variant="text" pTooltip="Follow tag"/>
+            @if(blogPostCategoryBySlug.data.isFollowing){
+                <p-button icon="pi pi-check" label="Following" severity="secondary" variant="text" pTooltip="Unfollow tag" (click)="unfollowTag(blogPostCategoryBySlug.data.id)" [disabled]="followTagButtonSpamControl"/>
+            }@else{
+                <p-button icon="pi pi-plus" label="Follow" severity="secondary" variant="text" pTooltip="Follow tag" (click)="followTag(blogPostCategoryBySlug.data.id)" [disabled]="followTagButtonSpamControl"/>
+            }
         </div> 
     }
 </div>
@@ -67,7 +71,7 @@
                 
                     @if (blog.image && blog.image.length>0) {
                         <div class="w-2/5 overflow-hidden rounded-lg ml-2 h-36">
-                            <img class="hover:opacity-75 h-full w-full object-cover" src="{{environmentApiImageUrl}}/{{blog.image}}" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}" alt="content-image">
+                            <img class="hover:opacity-75 h-full w-full object-cover" src="{{blog.image}}" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}" alt="content-image">
                         </div>
                     }
                 </div>
@@ -109,6 +113,13 @@
         <span class="font-lato text-xl">No more posts</span>
     }
 </div>
+
+<p-dialog resizable="false" draggable="false" modal="true" [(visible)]="updateTagStatusDialogVisible" (hide)="hideUpdateTagStatusDialog()" header="Are you sure you want to update the tag status?" [closable]="false">
+    <div class="flex flex-row items-center w-full justify-end">
+        <p-button icon="pi pi-times" severity="secondary" variant="text" (click)="hideUpdateTagStatusDialog()" label="Cancel"/>
+        <p-button icon="pi pi-check" variant="text" (click)="updateTagStatus()" label="Update"/>
+    </div>
+</p-dialog>
 
 <p-dialog resizable="false" draggable="false" modal="true" [(visible)]="tagBgDialogVisible" (hide)="hideTagBgDialog()">
     @if (blogPostCategoryBySlug && blogPostCategoryBySlug.data && blogPostCategoryBySlug.data.image && blogPostCategoryBySlug.data.image.length>0) {

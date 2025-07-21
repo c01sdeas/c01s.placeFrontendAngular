@@ -26,18 +26,36 @@ export const authGuard: CanActivateFn = (route, state) => {
 
           if (isTokenExpired) {
             localStorage.removeItem('authorization');
-            router.navigate(['/error/notfound']);
-            messageService.add({ severity: 'info', detail: 'Session expired.' });
-            return false;
+            authCrudService.userLogout().subscribe({
+              next: (res:{message:string}) => {
+                messageService.add({ severity: 'info', detail: 'Session expired.' });
+                router.navigate(['/error/notfound']);
+              },
+              complete: () => {
+                return false;
+              }
+            });
           }
-
           return true;
         }
       }
       
       localStorage.removeItem('authorization');
+      
+      if (decodedToken && decodedToken.username) {
+        authCrudService.userLogout().subscribe({
+          next: (res:{message:string}) => {
+            messageService.add({ severity: 'info', detail: 'Session expired.' });
+            router.navigate(['/error/notfound']);
+          },
+          complete: () => {
+            return false;
+          }
+        });
+      }
       router.navigate(['/error/notfound']);
       return false;
     })
   );
+
 };

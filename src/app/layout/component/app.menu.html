@@ -3,6 +3,15 @@
     <!-- <span class="text-3xl font-anta" style="font-family: 'Anta', sans-serif;font-weight: bold;">c01splace</span> -->
 
     <!-- <p-button label="Sign In" styleClass="w-full" icon="pi pi-sign-in" (onClick)="goToSignInPage()"/> -->
+
+
+    <ul class="layout-menu">
+        <ng-container *ngFor="let item of userMenuModel; let i = index">
+            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+            <li *ngIf="item.separator" class="menu-separator"></li>
+        </ng-container>
+    </ul>
+    
     
     <ul class="layout-menu">
         <ng-container *ngFor="let item of model; let i = index">

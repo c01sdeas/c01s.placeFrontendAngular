@@ -30,6 +30,15 @@ import { CreateNewBlogPostComponent } from './app/appComponents/apps/blog-app/bl
 import { CreateNewTagComponent } from './app/appComponents/apps/blog-app/blog-pannel/create/create-new-tag/create-new-tag.component';
 import { CreateComponent } from './app/appComponents/apps/blog-app/blog-pannel/create/create.component';
 import { BlogPostListFromUserComponent } from './app/appComponents/users/blog-post-list-from-user/blog-post-list-from-user.component';
+import { BlogLibrariesListComponent } from './app/appComponents/apps/blog-app/blog-libraries/blog-libraries-list/blog-libraries-list.component';
+import { BlogLibraryContentComponent } from './app/appComponents/apps/blog-app/blog-libraries/blog-library-content/blog-library-content.component';
+import { CheckPostsComponent } from './app/appComponents/apps/blog-app/blog-pannel/check/check-posts/check-posts.component';
+import { CheckTagsComponent } from './app/appComponents/apps/blog-app/blog-pannel/check/check-tags/check-tags.component';
+import { CheckComponent } from './app/appComponents/apps/blog-app/blog-pannel/check/check.component';
+import { adminGuard } from './app/guards/admin.guard';
+import { WelcomepageComponent } from './app/appComponents/welcomepage/welcomepage.component';
+import { BlogPostSearchComponent } from './app/appComponents/apps/blog-app/blog-posts/blog-post-search/blog-post-search.component';
+import { BlogLibraryMyStoriesComponent } from './app/appComponents/apps/blog-app/blog-libraries/blog-library-my-stories/blog-library-my-stories.component';
 export const appRoutes: Routes = [
     // {
     //     path: '',
@@ -45,6 +54,7 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: BlogAppComponent, children: [
                 { path: '', component: BlogListComponent },
+                { path: 'search', component: BlogPostSearchComponent },
             ] },
             { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
@@ -52,8 +62,15 @@ export const appRoutes: Routes = [
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'user', component: UsersComponent, children: [
                 { path: ':username/posts', component: BlogPostListFromUserComponent},
-                { path: 'profile', component: UserProfileComponent,canActivate: [authGuard] }
+                { path: 'profile', component: UserProfileComponent,canActivate: [authGuard] },
+                { path: 'library/list', component: BlogLibrariesListComponent,canActivate: [authGuard] },
+                { path: 'library/my-stories', component: BlogLibraryMyStoriesComponent,canActivate: [authGuard] },
+                { path: 'library/:libraryID', component: BlogLibraryContentComponent,canActivate: [authGuard] },
             ]},
+            { path: 'moderate', component: CheckComponent, canActivate:[adminGuard], children: [
+                { path: 'stories', component: CheckPostsComponent },
+                { path: 'tags', component: CheckTagsComponent },
+            ] },
             
             // { path: 'apps', component: AppsComponent },
 
@@ -83,6 +100,8 @@ export const appRoutes: Routes = [
             },
         ]
     },
+
+    { path: 'welcome', component: WelcomepageComponent },
     
     { path: 'auth', component: AuthenticationComponent, children: [
         { path: 'login', component: LoginComponent },

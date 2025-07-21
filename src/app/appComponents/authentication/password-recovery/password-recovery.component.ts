@@ -7,7 +7,7 @@ import { PasswordModule } from 'primeng/password';
 import { AuthCrudService } from '../../../services/users/auths/auth-crud.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { UserCrudService } from '../../../services/users/user-crud.service';
-import { IUsernameBaseRequestModel } from '../../../../../src/app/services/apps/models/auths/authCrudModel';
+import { IUsernameBaseRequestDto } from '../../../models/auths/authCrudModel';
 import { DialogModule } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
 
@@ -85,7 +85,7 @@ export class PasswordRecoveryComponent implements OnInit {
       }
 
       else {
-        const usernameDataForRecovery : IUsernameBaseRequestModel = {} as IUsernameBaseRequestModel;
+        const usernameDataForRecovery : IUsernameBaseRequestDto = {} as IUsernameBaseRequestDto;
         usernameDataForRecovery.username = this.userPasswordRecoveryFormData.get('username')!.value;
         if (this.userPasswordRecoveryFormData.get('username')!.valid) {
           this.authCrudService.checkUsernameForRecovery(usernameDataForRecovery).subscribe({

@@ -20,7 +20,7 @@ export class CookieConsentComponent implements OnInit {
   // constructor(private cookieService: CookieService, private router:Router) {}
 
   // ngOnInit(): void {
-  //   console.log(this.router.url);
+  //   (this.router.url);
     
   //   const currentUrl = this.router.url;
   //   const consent = this.cookieService.get('site_consent');

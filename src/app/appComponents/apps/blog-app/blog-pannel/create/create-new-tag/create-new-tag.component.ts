@@ -9,6 +9,7 @@ import { CardModule } from 'primeng/card';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-create-new-tag',
@@ -18,7 +19,7 @@ import { Router } from '@angular/router';
 })
 export class CreateNewTagComponent implements OnInit {
 
-  constructor(private messageService: MessageService, private blogCategoriesCrudService:BlogCategoriesCrudService, private formBuilder:FormBuilder, private router:Router) {}
+  constructor(private messageService: MessageService, private blogCategoriesCrudService:BlogCategoriesCrudService, private formBuilder:FormBuilder, private router:Router, private location:Location) {}
 
   ngOnInit(): void {
     this.createNewTagFormData=this.formBuilder.group({
@@ -29,9 +30,14 @@ export class CreateNewTagComponent implements OnInit {
     });
   }
 
-  createNewTagFormData!:FormGroup;
+  locationBack(){
+    this.location.back();
+  }
 
+  createNewTagFormData!:FormGroup;
+  createTagButtonDisabled: boolean = false;
   createTag(): void {
+    this.createTagButtonDisabled = true;
     if (this.createNewTagFormData.valid) {
       this.createNewTagFormData.patchValue({
         image: this.createNewTagFormData.value.image,
@@ -51,10 +57,14 @@ export class CreateNewTagComponent implements OnInit {
           this.createNewTagFormData.reset();
           this.router.navigate(['/create/post']);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Tag created successfully' });
+          this.createTagButtonDisabled = false;
         }
       });
     }
-    else this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please check the fields.' });
+    else{
+      this.createTagButtonDisabled = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please check the fields.' });
+    }
   }
 
 
@@ -67,19 +77,19 @@ export class CreateNewTagComponent implements OnInit {
     
   //   // this.blogCategoriesCrudService.createNewBlogCategoryImage(this.slug).subscribe({
   //   //   next: (response:any) => {
-  //   //     console.log(response);
+  //   //     (response);
   //   //   },
   //   //   error: (error:any) => {
-  //   //     console.log(error);
+  //   //     (error);
   //   //   }
   //   // });
 
   //   this.blogCategoriesCrudService.createNewBlogCategoryImage(this.formData).subscribe({
   //     next: (response:any) => {
-  //       console.log(response);
+  //       (response);
   //     },
   //     error: (error:any) => {
-  //       console.log(error);
+  //       (error);
   //     }
   //   });
   // }
@@ -100,15 +110,15 @@ export class CreateNewTagComponent implements OnInit {
   //   formData.append('tagImage', file);
 
   //   for (let pair of formData.entries()) {
-  //     console.log(`${pair[0]}: ${pair[1]}`);
+  //     (`${pair[0]}: ${pair[1]}`);
   //   }
     
   //   this.blogCategoriesCrudService.createNewBlogCategoryImage(formData).subscribe({
   //     next: (response:any) => {
-  //       console.log(response);
+  //       (response);
   //     },
   //     error: (error:any) => {
-  //       console.log(error);
+  //       (error);
   //     }
   //   });
   // }

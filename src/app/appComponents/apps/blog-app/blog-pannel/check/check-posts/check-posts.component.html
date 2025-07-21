@@ -1,0 +1,102 @@
+
+@if(blogPostListLoading){
+    <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
+}
+
+@if(!blogPostListLoading && blogList && (!blogList.data || blogList.data.length==0)){
+    <p>No posts found.</p>
+}
+
+@if(!blogPostListLoading && blogList && blogList.data && blogList.data.length>0){
+    <p-card>
+        <p-table [value]="blogList.data" [loading]="blogPostListLoading">
+            <ng-template pTemplate="caption">
+                <div class="w-full flex flex-row items-center justify-between">
+                    <p>Blog Posts</p>
+                    <div class="flex flex-row items-center">
+                        <!--in here broooooooooooooooooooooooooooooooo-->
+                        Story status: 
+                        <p-togglebutton [(ngModel)]="postStatusFilter" onLabel="Active" offLabel="Inactive" class="w-24" />
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Meta</th>
+                    <th>Intro</th>
+                    <th>Category Title</th>
+                    <th>Username</th>
+                    <th>User Nickname</th>
+                    <th>Created At</th>
+                    <th>Status</th>
+                </tr>
+            </ng-template>
+        
+            <ng-template pTemplate="body" let-blog>
+               @if(blog.status == postStatusFilter){
+                <tr class="h-32">
+                    <td>
+                        @if(blog.image && blog.image.length>0){
+                            <img class="h-full w-full object-cover" src="{{blog.image}}" alt="content-image">
+                        }
+                    </td>
+                    <td>{{blog.title}}</td>
+                    <td>{{blog.meta}}</td>
+                    <td>{{blog.intro}}</td>
+                    <td>{{blog.categoryTitle}}</td>
+                    <td>{{blog.username}}</td>
+                    <td>{{blog.userNickname}}</td>
+                    <td>{{blog.createdAt | date}}</td>
+                    <td>
+                        @if(blog.status){
+                            <p-badge value="Active" severity="success"/>
+                        }
+                        @else{
+                            <p-badge value="Inactive" severity="danger"/>
+                        }
+                    </td>
+                </tr>
+                <tr class="mb-10">
+                    <td colspan="9">
+                        <div class="flex justify-end items-center w-full">
+                            <p-button icon="pi pi-arrow-right" label="Read more" variant="text" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}"/>
+                            
+                            @if(!blog.status){
+                                <p-button icon="pi pi-check" label="Approve" severity="success" variant="text" (click)="updateBlogPostStatus(blog.id)" [disabled]="updateBlogPostStatusSpamControl.includes(blog.id)"/>
+                            } @else {
+                                <p-button icon="pi pi-times" label="Reject" severity="danger" variant="text" (click)="updateBlogPostStatus(blog.id)" [disabled]="updateBlogPostStatusSpamControl.includes(blog.id)"/>
+                            }
+        
+                            <p-button icon="pi pi-trash" label="Delete" severity="danger" variant="text" (click)="showDeleteBlogPostDialog(blog.id, blog.title)" [disabled]="updateBlogPostStatusSpamControl.includes(blog.id)"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr> <td colspan="9"><p-divider/></td></tr>
+               }
+            </ng-template>
+        </p-table>
+    </p-card>
+
+    <p-dialog [visible]="deleteBlogPostDialogVisible" header="Are you sure you want to delete the story titled {{deleteBlogPostDialogPostTitle}}?" modal="true" draggable="false" resizable="false" [closable]="false">
+
+        <div class="flex flex-row justify-end items-center w-full">
+            <p-button icon="pi pi-times" label="Cancel" severity="secondary" variant="text" (click)="hideDeleteBlogPostDialog()"/>
+            <p-button icon="pi pi-trash" label="Delete" severity="danger" variant="text" (click)="deleteBlogPost()"/>
+        </div>        
+    </p-dialog>
+}
+
+
+<style>
+    tr{
+        border:none !important;
+        outline: none !important;
+    }
+    td{
+        border:none !important;
+        outline: none !important;
+    }
+
+</style>

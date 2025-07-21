@@ -1,0 +1,40 @@
+<div class="w-full flex flex-row justify-between items-center mb-16">
+    <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
+</div>
+
+<p-card>
+    <div class="w-full flex flex-row justify-between items-center mb-6">
+        <h4>My stories</h4>
+    </div>
+    <p-table [value]="blogPostList.data" [loading]="postsIsLoading" selectionMode="single" paginator [rows]="10" [totalRecords]="totalRecords" [lazy]="true" (onLazyLoad)="onTableLazyLoad($event)" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Title</th>
+                <th>Meta</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-post>
+            <tr>
+                <td routerLink="/tag/{{post.categorySlug}}/post/{{post.slug}}" class="cursor-pointer">{{post.title}}</td>
+                <td routerLink="/tag/{{post.categorySlug}}/post/{{post.slug}}" class="cursor-pointer">{{post.meta}}</td>
+                <td routerLink="/tag/{{post.categorySlug}}/post/{{post.slug}}" class="cursor-pointer">
+                    <div class="flex flex-row items-center justify-center select-none">
+                        @if(post.status){
+                            <p-tag value="Active" class="w-14" severity="success"/>
+                        } @else {
+                            <p-tag value="Inactive" class="w-14" severity="info"/>
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="flex flex-row items-center justify-center select-none">
+                        <p-button icon="pi pi-arrow-right" class="p-button-text" variant="text" routerLink="/tag/{{post.categorySlug}}/post/{{post.slug}}"/>
+                        <p-button icon="pi pi-trash" class="p-button-text" severity="danger" variant="text"/>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

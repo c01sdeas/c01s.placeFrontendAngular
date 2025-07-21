@@ -3,12 +3,11 @@
 <div class="w-full flex flex-row justify-between items-center mb-16">
     <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
     
-    @if(!blogPostDetailIsLoading && blogPostDetail.data && blogPostDetail.data.title){
+    @if(!blogPostDetailIsLoading && blogPostDetail.data && blogPostDetail.data.title && (sessionUsername==blogPostDetail.data.username || userRolesData.includes('admin') || userRolesData.includes('moderator'))){
         <p-menu #menu [model]="menuItems" [popup]="true" />
-        <p-button (click)="menu.toggle($event)" variant="text" severity="secondary" icon="pi pi-ellipsis-v"/>
+        <p-button (click)="menu.toggle($event);" variant="text" severity="secondary" icon="pi pi-ellipsis-v"/>
     }
 </div>
-
 
 @if(blogPostDetailIsLoading){
     <div class="w-full flex"><i class="pi pi-spin pi-spinner"></i></div>
@@ -63,13 +62,13 @@
             </p-button>
         </div>
         <div class="flex flex-row items-center">
-            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library"/>
+            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library" (click)="saveToLibrary(blogPostDetail.data.id)"/>
         </div>
     </div> 
 
     <p-divider type="dashed"/>
     
-    @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
+    <!-- @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
         <img src="{{environmentApiImageUrl}}/{{blogPostDetail.data.image}}" class="mt-12 mb-12 cursor-pointer" alt="content-image" (click)="showImageContentDialog()">
 
         <p>
@@ -77,13 +76,13 @@
         </p>
 
         <p-divider type="dashed"/>
-    }
+    } -->
 
     <p class="font-lato text-2xl text-left">
-        {{blogPostDetail.data.intro}}    
+        {{blogPostDetail.data.intro}}
     </p>
 
-    <div [innerHTML]="blogPostDetail.data.content" class="font-lato text-2xl w-full whitespace-break-spaces break-words"></div>
+    <div #blogContentRef [innerHTML]="blogPostDetail.data.content" class="font-lato text-2xl w-full whitespace-break-spaces break-words"></div>
 
     <p-divider type="dashed"/>
 
@@ -116,7 +115,7 @@
             </p-button>
         </div>
         <div class="flex flex-row items-center">
-            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library"/>
+            <p-button icon="pi pi-bookmark" severity="secondary" variant="text" pTooltip="Save to library" (click)="saveToLibrary(blogPostDetail.data.id)"/>
         </div>
     </div> 
 
@@ -160,7 +159,21 @@
     
     <p-dialog [(visible)]="imageContentDialogVisible" draggable="false" resizable="false" modal="true">
         @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
-            <img src="{{environmentApiImageUrl}}/{{blogPostDetail.data.image}}" class="mt-12 mb-12" alt="content-image">
+            <img src="{{blogPostDetail.data.image}}" class="mt-12 mb-12" alt="content-image">
         }
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteBlogPostDialogVisible" draggable="false" resizable="false" modal="true" header="Are you sure you want to delete the story titled {{blogPostDetail.data.title}}?" [closable]="false">
+        <div class="flex flex-row justify-end items-center w-full">
+            <p-button icon="pi pi-times" label="Cancel" severity="secondary" variant="text" (click)="hideDeleteBlogPostDialog()" [disabled]="updateAndDeleteBlogPostSpamControl"/>
+            <p-button icon="pi pi-trash" label="Delete" severity="danger" variant="text" (click)="deleteBlogPost()" [disabled]="updateAndDeleteBlogPostSpamControl"/>
+        </div>
+    </p-dialog>
+
+    <p-dialog [(visible)]="updateBlogPostStatusDialogVisible" draggable="false" resizable="false" modal="true" header="Are you sure you want to update the status of the story titled {{blogPostDetail.data.title}}?" [closable]="false">
+        <div class="flex flex-row justify-end items-center w-full">
+            <p-button icon="pi pi-times" label="Cancel" severity="secondary" variant="text" (click)="hideUpdateBlogPostStatusDialog()" [disabled]="updateAndDeleteBlogPostSpamControl"/>
+            <p-button icon="pi pi-check" label="Update" variant="text" (click)="updateBlogPostStatus()" [disabled]="updateAndDeleteBlogPostSpamControl"/>
+        </div>
     </p-dialog>
 }

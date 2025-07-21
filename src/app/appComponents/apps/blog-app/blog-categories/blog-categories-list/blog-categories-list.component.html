@@ -81,7 +81,11 @@
                         <!--another-components-->
                     </div>
                     <div class="flex flex-row items-center">
-                        <p-button icon="pi pi-plus" severity="secondary" variant="text" pTooltip="Follow tag" label="Follow"/>
+                        @if(category.isFollowing){
+                            <p-button icon="pi pi-check" severity="secondary" variant="text" pTooltip="Unfollow tag" label="Following" (click)="unfollowTag(category.id)" [disabled]="followTagButtonSpamControl.includes(category.id)"/>
+                        }@else{
+                            <p-button icon="pi pi-plus" severity="secondary" variant="text" pTooltip="Follow tag" label="Follow" (click)="followTag(category.id)" [disabled]="followTagButtonSpamControl.includes(category.id)"/>
+                        }
                     </div>
                 </div>
             </div>
