@@ -41,6 +41,7 @@ interface IBlogPostInLibraryResponseDto {
     createdAt: Date;
     updatedAt: Date;
     voteCount: number;
+    viewCount: number;
 }
 
 //followingTags

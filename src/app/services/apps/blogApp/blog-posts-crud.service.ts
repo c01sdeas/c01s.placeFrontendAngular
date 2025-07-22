@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { IBlogResponseDto, IBlogListResponseDto, IBooleanResponse, ICreateNewBlogPostRequestDto, IDeleteBlogPostRequestDto, IGetAllBlogPostsRequestDto, IGetBlogPostByCategoryIDRequestDto, IGetBlogPostByCategorySlugRequestDto, IGetBlogPostBySlugRequestDto, IGetAllBlogPostsByUsernameRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, ISubscribeToNewsRequestDto, IUpdateBlogPostContentRequestDto, IUpdateBlogPostImageRequestDto, IUpdateBlogPostIntroRequestDto, IUpdateBlogPostMetaRequestDto, IUpdateBlogPostStatusRequestDto, IUpdateBlogPostTitleRequestDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewCountRequestDto, ICreateNewBlogPostImageRequestDto, ICreateNewBlogPostImageResponseDto } from '../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { IBlogResponseDto, IBlogListResponseDto, IBooleanResponse, ICreateNewBlogPostRequestDto, IDeleteBlogPostRequestDto, IGetAllBlogPostsRequestDto, IGetBlogPostByCategoryIDRequestDto, IGetBlogPostByCategorySlugRequestDto, IGetBlogPostBySlugRequestDto, IGetAllBlogPostsByUsernameRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, ISubscribeToNewsRequestDto, IUpdateBlogPostContentRequestDto, IUpdateBlogPostImageRequestDto, IUpdateBlogPostIntroRequestDto, IUpdateBlogPostMetaRequestDto, IUpdateBlogPostStatusRequestDto, IUpdateBlogPostTitleRequestDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewCountRequestDto, ICreateNewBlogPostImageRequestDto, ICreateNewBlogPostImageResponseDto, IUpdateBlogPostViewLogRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -86,6 +86,12 @@ export class BlogPostsCrudService {
 
   updateBlogPostViewCount(data:IUpdateBlogPostViewCountRequestDto):Observable<IBooleanResponse>{
     return this.httpClient.patch<IBooleanResponse>(this.apiUrl + 'update-blog-post-view-count',data, { withCredentials: true });
+  }
+
+  updateBlogPostViewLog(data:IUpdateBlogPostViewLogRequestDto):Observable<IUpdateBlogPostViewLogResponseDto>{
+    let params = new HttpParams();
+    params = params.append('blogPostID', data.blogPostID.toString());
+    return this.httpClient.get<IUpdateBlogPostViewLogResponseDto>(this.apiUrl + 'update-blog-post-view-log', { withCredentials: true, params });
   }
 
   getBlogPostVoteCount(data:IGetBlogPostVotesRequestDto):Observable<IGetBlogPostVotesResponseDto>{

@@ -24,6 +24,7 @@ interface IBlogResponseDtoForList {
     username: string;
     status: boolean;
     voteCount: number;
+    viewCount: number;
     userNickname: string;
     comments: {username:string, userNickname:string, content:string, createdAt:Date}[];
     createdAt: Date;
@@ -46,6 +47,7 @@ interface IBlogResponseDto extends IBaseResponse {
         username: string;
         status: boolean;
         voteCount: number;
+        viewCount: number;
         userNickname: string;
         comments: {username:string, userNickname:string, content:string, createdAt:Date}[];
         createdAt: Date;
@@ -162,6 +164,14 @@ interface IUpdateBlogPostViewCountRequestDto {
     id: string;
 }
 
+interface IUpdateBlogPostViewLogRequestDto {
+    blogPostID: string;
+}
+
+interface IUpdateBlogPostViewLogResponseDto extends IBaseResponse {
+    data: number;
+}
+
 export type {
     ICreateNewBlogPostRequestDto,
     ICreateNewBlogPostImageRequestDto,
@@ -187,6 +197,8 @@ export type {
     IGetBlogPostUserVoteControlRequestDto,
     IGetBlogPostUserVoteControlResponseDto,
     IUpdateBlogPostViewCountRequestDto,
+    IUpdateBlogPostViewLogRequestDto,
+    IUpdateBlogPostViewLogResponseDto,
     //subscribetonews
     ISubscribeToNewsRequestDto
 };

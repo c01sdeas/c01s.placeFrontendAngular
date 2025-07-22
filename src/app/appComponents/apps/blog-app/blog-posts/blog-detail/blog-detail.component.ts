@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
-import { IBlogResponseDto, IBooleanResponse, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { IBlogResponseDto, IBooleanResponse, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { BlogPostsCrudService } from '../../../../../services/apps/blogApp/blog-posts-crud.service';
 import { CommonModule, Location } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
@@ -250,11 +250,17 @@ export class BlogDetailComponent implements OnInit {
     }
   }
 
+  viewCount:number=0;
+  viewCountLoading:boolean=false;
   updateBlogPostViewCount(id:string){
-    this.blogPostService.updateBlogPostViewCount({id}).subscribe({
-      next: (response:IBooleanResponse) => {
+    this.viewCountLoading=true;
+    this.blogPostService.updateBlogPostViewLog({blogPostID:id}).subscribe({
+      next: (response:IUpdateBlogPostViewLogResponseDto) => {
+        this.viewCount = response.data;
+        this.viewCountLoading=false;
       },
       error: (error:any) => {
+        this.viewCountLoading=false;
       }
     });
   }

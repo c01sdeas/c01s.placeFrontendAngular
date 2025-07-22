@@ -55,8 +55,14 @@
             
                     <div class="flex flex-row items-center justify-between mt-6">
                         <div class="flex flex-row items-center mr-6 cursor-pointer" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}">
+                            @if(blog.viewCount>0){
+                                <span class="flex flex-row items-center font-bold mr-6">
+                                    <i class="pi pi-eye mr-2"></i>
+                                    {{blog.viewCount}} view@if(blog.viewCount>1){s}
+                                </span>
+                            }
                             @if(blog.voteCount>0){
-                                <span class="flex flex-row items-center font-bold">
+                                <span class="flex flex-row items-center font-bold mr-6">
                                     <i class="pi pi-thumbs-up mr-2"></i>
                                     +{{blog.voteCount}} vote@if(blog.voteCount>1){s}
                                 </span>

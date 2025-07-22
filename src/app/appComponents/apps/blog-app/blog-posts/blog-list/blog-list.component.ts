@@ -67,7 +67,7 @@ export class BlogListComponent implements OnInit {
         if (response.data) {
           this.blogList.data=response.data.filter(blog=>blog.status&&blog.categoryStatus);
         }
-        this.postsIsLoading=false;
+        this.postsIsLoading=false;        
       },
       error: (error:any) => {
         this.postsIsLoading=false;
