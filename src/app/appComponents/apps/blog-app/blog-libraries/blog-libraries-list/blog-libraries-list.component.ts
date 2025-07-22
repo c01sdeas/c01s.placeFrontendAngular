@@ -79,7 +79,7 @@ export class BlogLibrariesListComponent {
     }
     this.blogLibrariesIsLoading=true;
 
-    const requestData:IGetAllBlogLibrariesByUsernameRequestDto = {username:this.sessionUsername, blogPostID:this.temporaryblogPostID};
+    const requestData:IGetAllBlogLibrariesByUsernameRequestDto = {blogPostID:this.temporaryblogPostID};
     
     this.blogLibrariesService.getAllBlogLibrariesByUsernameService(requestData).subscribe({
       next: (response:IBlogLibraryListResponseDto) => {
@@ -92,7 +92,6 @@ export class BlogLibrariesListComponent {
       },
       error: (error:any) => {
         this.messageService.add({severity:'error', summary:'Error', detail:'Error fetching libraries.'});
-        location.reload();
       },
       complete: () => {
         this.blogLibrariesIsLoading=false;
@@ -111,7 +110,6 @@ export class BlogLibrariesListComponent {
   createNewLibraryRequestData:ICreateNewBlogLibraryRequestDto = {
     title:this.newLibraryName,
     description:this.newLibraryDescription,
-    username:''
   };
   createNewLibrary(){
     if(localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined || this.sessionUsername == "" || this.sessionUsername == null || this.sessionUsername == undefined){
@@ -120,15 +118,12 @@ export class BlogLibrariesListComponent {
       return;
     }
     
-    this.createNewLibraryRequestData.username=this.sessionUsername;
-    
     this.blogLibrariesService.createNewBlogLibraryService(this.createNewLibraryRequestData).subscribe({
       next: (response:IBooleanResponse) => {
         this.messageService.add({severity:'success', summary:'Success', detail:'Library created successfully.'});
       },
       error: (error:any) => {
         this.messageService.add({severity:'error', summary:'Error', detail:'Error creating library.'});
-        location.reload();
       },
       complete: () => {
         this.getAllBlogLibrariesByUsername();

@@ -1,7 +1,6 @@
 interface ICreateNewBlogLibraryRequestDto {
     title: string;
     description: string;
-    username: string;
 }
 
 interface IUpdateBlogLibraryTitleRequestDto {
@@ -21,7 +20,6 @@ interface IDeleteBlogLibraryRequestDto {
 }
 
 interface IGetAllBlogLibrariesByUsernameRequestDto {
-    username?: string;
     blogPostID?: string;
 }
 interface IGetAllBlogPostsByUsernameForLibraryRequestDto {

@@ -169,8 +169,8 @@
     
     
     <p-dialog [(visible)]="imageContentDialogVisible" draggable="false" resizable="false" modal="true">
-        @if(blogPostDetail.data.image && blogPostDetail.data.image.length>0){
-            <img src="{{blogPostDetail.data.image}}" class="mt-12 mb-12" alt="content-image">
+        @if(imageContentDialogData){
+            <img src="{{imageContentDialogData}}" class="mt-12 mb-12 w-full" alt="content-image">
         }
     </p-dialog>
 

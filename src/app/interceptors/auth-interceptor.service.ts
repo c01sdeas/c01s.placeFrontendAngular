@@ -6,13 +6,16 @@ import { catchError, throwError } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const modifiedReq = req.clone({
+    withCredentials: true
+  });
   const router = inject(Router);
 
   const token = localStorage.getItem('authorization');
   const messageService = inject(MessageService)
 
   if (token) {
-    const clonedReq = req.clone({
+    const clonedReq = modifiedReq.clone({
       headers: req.headers.set('authorization', token),
     });
 
@@ -42,7 +45,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
-  return next(req).pipe(
+  return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {
       return throwError(() => error);
     })

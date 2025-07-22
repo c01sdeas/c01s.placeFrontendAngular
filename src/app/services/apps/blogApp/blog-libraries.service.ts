@@ -38,7 +38,6 @@ export class BlogLibrariesService {
 
   getAllBlogLibrariesByUsernameService(data:IGetAllBlogLibrariesByUsernameRequestDto):Observable<IBlogLibraryListResponseDto>{
     let params = new HttpParams();
-    params = params.append('username', data.username?.toString() || '');
     params = params.append('blogPostID', data.blogPostID?.toString() || '');
     return this.httpClient.get<IBlogLibraryListResponseDto>(this.apiUrl + 'get-all-blog-libraries-by-username', { withCredentials: true, params });
   }
