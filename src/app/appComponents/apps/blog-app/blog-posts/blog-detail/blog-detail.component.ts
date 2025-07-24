@@ -60,14 +60,27 @@ export class BlogDetailComponent implements OnInit {
   fixImageSrcs() {
     if (!this.blogContentRef) return;
   
-    const images = this.blogContentRef.nativeElement.querySelectorAll('img');
-    images.forEach((img: HTMLImageElement) => {
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => {
-        this.showImageContentDialog(img.src);
-      });
-    });
+    // const images = this.blogContentRef.nativeElement.querySelectorAll('img');
+    // images.forEach((img: HTMLImageElement) => {
+    //   img.style.cursor = 'pointer';
+    //   img.addEventListener('click', () => {
+    //     this.showImageContentDialog(img.src);
+    //   });
+    // });
   }
+
+  sanitizeAndWrapPreTags(html: string): string {
+    const newContent = html.replace(/<pre([\s\S]*?)>([\s\S]*?)<\/pre>/gi, (match, attr, content) => {
+      return `
+        <div class="overflow-x-auto max-w-full whitespace-pre border border-gray-700 rounded-md bg-gray-900 pb-6 pl-6 pr-6 font-mono text-lg text-gray-200">         
+          <pre id="code-block"${attr}>${content}</pre>
+        </div>
+      `;
+    });
+    this.blogContentRef.nativeElement.innerHTML = newContent;
+    return newContent;
+  }
+  
 
   locationBack() {
     this.location.back();
@@ -92,8 +105,11 @@ export class BlogDetailComponent implements OnInit {
       complete: () => {
         this.getBlogPostVoteCount();
         this.getBlogPostUserVoteControl();
+        // setTimeout(() => {
+        //   this.fixImageSrcs();
+        // }, 1);
         setTimeout(() => {
-          this.fixImageSrcs();
+          this.sanitizeAndWrapPreTags(this.blogPostDetail.data.content);
         }, 1);
         this.blogPostDetailIsLoading=false;
         if(this.blogPostDetail.data) this.titleService.setTitle(this.blogPostDetail.data.title+' - c01splace');

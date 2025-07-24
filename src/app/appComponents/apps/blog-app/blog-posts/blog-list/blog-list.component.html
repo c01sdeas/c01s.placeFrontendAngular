@@ -39,18 +39,15 @@
                         <span class="flex flex-row items-center text-sm"><i class="pi pi-calendar-clock mr-2"></i>{{blog.createdAt | date:'MM/dd/yyyy h:mm a z'}}</span>
                     </div>
 
-                    <div class="flex flex-row">
-                        <div class="flex flex-col w-full">
-                            <a class="w-full cursor-pointer" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}"><h4 class="font-poppins">{{blog.title}}</h4></a>
-            
-                            <p class="font-lato mb-3 mt-3 text-lg opacity-85">{{blog.intro}}</p> 
+                    @if (blog.image && blog.image.length>0) {
+                        <div class="w-full overflow-hidden rounded-lg mb-6">
+                            <img class="hover:opacity-75 cursor-pointer w-full object-cover" src="{{blog.image}}" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}" alt="content-image">
                         </div>
-                        
-                        @if (blog.image && blog.image.length>0) {
-                            <div class="w-2/5 overflow-hidden rounded-lg ml-2 h-36">
-                                <img class="hover:opacity-75 h-full w-full object-cover" src="{{blog.image}}" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}" alt="content-image">
-                            </div>
-                        }
+                    }
+                    
+                    <div class="flex flex-col w-full">
+                        <a class="w-full cursor-pointer" routerLink="/tag/{{blog.categorySlug}}/post/{{blog.slug}}"><h4 class="font-poppins">{{blog.title}}</h4></a>
+                        <p class="font-lato mb-3 mt-3 text-lg opacity-85">{{blog.intro}}</p> 
                     </div>
             
                     <div class="flex flex-row items-center justify-between mt-6">

@@ -162,7 +162,7 @@ export class BlogListComponent implements OnInit {
     this.loadMorePostButtonVisible = true;
     this.blogLibrariesService.getAllBlogPostsByFollowingTagsService(this.getAllBlogPostsByFollowingTagsData).subscribe({
       next: (response:IBlogListResponseDto) => {
-        this.blogList.data=response.data.filter((blog)=>blog.status&&blog.categoryStatus);
+        this.blogList.data=response.data.filter(blog=>blog.status&&blog.categoryStatus);        
         this.postsIsLoading=false;
       },
       error: (error:any) => {

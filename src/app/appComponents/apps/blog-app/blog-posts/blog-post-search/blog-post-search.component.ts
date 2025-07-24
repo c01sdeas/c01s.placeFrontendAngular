@@ -35,6 +35,8 @@ export class BlogPostSearchComponent {
     this.blogPostsSearchIsLoading = true;
     this.blogPostsCrudService.searchInBlogPosts({data:this.searchForm.value.searchText}).subscribe((response) => {
       this.blogPostsSearchData = response;
+      console.log(this.blogPostsSearchData);
+      
       this.blogPostsSearchIsLoading = false;
     })
   }

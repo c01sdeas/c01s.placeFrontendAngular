@@ -108,6 +108,7 @@ export class CreateNewBlogPostComponent implements OnInit {
         },
         error: (error) => {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error?.message });
+          this.createPostButtonDisabled = false;
         },
         complete: () => {
           this.createNewPostFormData.reset();

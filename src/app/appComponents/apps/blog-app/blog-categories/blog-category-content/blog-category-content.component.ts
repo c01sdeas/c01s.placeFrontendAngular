@@ -163,9 +163,6 @@ export class BlogCategoryContentComponent implements OnInit {
             next: (response:IUserRolesResponseDto) => {
                 this.userRolesData = response;
 
-                console.log(response);
-                
-
                 if ((response.data.includes('admin') || response.data.includes('moderator')) && this.blogPostCategoryBySlug.data.status) {
                     this.menuItems = [
                         {
@@ -205,8 +202,6 @@ export class BlogCategoryContentComponent implements OnInit {
 
     followTagButtonSpamControl:boolean=false;
     followTag(tagID:string){
-        console.log(tagID);
-        
         if(localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined){
             this.authCrudService.returnUrl = this.location.path();
             this.router.navigateByUrl('/auth/login');

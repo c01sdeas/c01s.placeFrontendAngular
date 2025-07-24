@@ -28,6 +28,7 @@ export class BlogPostListFromUserComponent implements OnInit{
 
   ngOnInit(): void {
     this.getAllBlogPostsByUsername();
+    this.getSessionUsername();
   }
 
   menuItems:MenuItem[] = [
@@ -68,7 +69,7 @@ export class BlogPostListFromUserComponent implements OnInit{
           this.writer = res.data[0].userNickname;
           this.titleService.setTitle("Stories from " + this.writer + " - c01splace");
           res.data.filter((blog)=>{
-            if(blog.status){
+            if(blog.status && blog.categoryStatus){
               this.blogList.data.push(blog);
             }
           });
@@ -89,7 +90,7 @@ export class BlogPostListFromUserComponent implements OnInit{
       this.blogPostService.getAllBlogPostsByUsername(this.getAllBlogPostsByUsernameRequestData).subscribe({
       next: (response:IBlogListResponseDto) => {
           if(response.data)
-              this.blogList.data.push(...response.data.filter(blog=>blog.status));
+              this.blogList.data.push(...response.data.filter(blog=>blog.status && blog.categoryStatus));
           else {
               this.loadMorePostButtonVisible=false;
               this.messageService.add({severity:'warn', summary:'No more posts', detail:'No more posts to load.'});
@@ -106,7 +107,21 @@ export class BlogPostListFromUserComponent implements OnInit{
       });
   }
 
+  sessionUsername:string="";
+
+  getSessionUsername(){
+    if (!localStorage.getItem('authorization')) {
+      return;
+    }
+    this.authCrudService._signedInData.subscribe(response=>{if(response){this.sessionUsername=response.data.username;}});
+  }
+
   saveToLibrary(blogPostID:string){
+    if (localStorage.getItem('authorization') == null || localStorage.getItem('authorization') == undefined || this.sessionUsername == "" || this.sessionUsername == null || this.sessionUsername == undefined){
+      this.authCrudService.returnUrl = this.location.path();
+      this.router.navigateByUrl('/auth/login');
+      return;
+    }
     this.authCrudService.signedInData$.subscribe(response=>{
       if(response.data.username){
         this.blogLibrariesService.temporarySaveToLibraryData = blogPostID;

@@ -22,7 +22,7 @@
     <div class="flex flex-row items-center mb-3">
         <a class="cursor-pointer hover:underline flex flex-row items-center font-bold mr-2" routerLink="/tag/{{blogPostDetail.data.categorySlug}}"><i class="pi pi-tag mr-2"></i> <span class="mr-2 font-medium">in</span>{{blogPostDetail.data.categoryTitle}}</a>
         <span class="mr-2 text-sm">by</span>
-        <a class="cursor-pointer hover:underline flex flex-row items-center text-sm" routerLink="/user/{{blogPostDetail.data.username}}/posts"> {{blogPostDetail.data.userNickname}}.</a>
+        <a class="cursor-pointer hover:underline flex flex-row items-center text-sm" routerLink="/user/{{blogPostDetail.data.username}}/posts"> {{blogPostDetail.data.userNickname}} <i class="pi pi-user ml-2"></i></a>
     </div>
 
     <div class="flex flex-row mb-6">
@@ -89,11 +89,11 @@
         <p-divider type="dashed"/>
     } -->
 
-    <p class="font-lato text-2xl text-left">
+    <p class="font-lato text-2xl text-left leading-normal">
         {{blogPostDetail.data.intro}}
     </p>
 
-    <div #blogContentRef [innerHTML]="blogPostDetail.data.content" class="font-lato text-2xl w-full whitespace-break-spaces break-words"></div>
+    <div #blogContentRef [innerHTML]="blogPostDetail.data.content" class="font-lato text-2xl w-full whitespace-pre-wrap break-words"></div>
 
     <p-divider type="dashed"/>
 
@@ -168,11 +168,11 @@
     </div> -->
     
     
-    <p-dialog [(visible)]="imageContentDialogVisible" draggable="false" resizable="false" modal="true">
+    <!-- <p-dialog [(visible)]="imageContentDialogVisible" draggable="false" resizable="false" modal="true">
         @if(imageContentDialogData){
             <img src="{{imageContentDialogData}}" class="mt-12 mb-12 w-full" alt="content-image">
         }
-    </p-dialog>
+    </p-dialog> -->
 
     <p-dialog [(visible)]="deleteBlogPostDialogVisible" draggable="false" resizable="false" modal="true" header="Are you sure you want to delete the story titled {{blogPostDetail.data.title}}?" [closable]="false">
         <div class="flex flex-row justify-end items-center w-full">

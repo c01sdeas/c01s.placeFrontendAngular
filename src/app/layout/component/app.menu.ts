@@ -265,7 +265,7 @@ export class AppMenu {
                     {
                         label: 'Backend Project',
                         icon: 'pi pi-fw pi-github',
-                        url: 'https://github.com/c01sdeas/c01s.placeBackendAPI/tree/master',
+                        url: 'https://github.com/c01sdeas/c01s.placeBackend/tree/master',
                         target: '_blank'
                     },
                     {

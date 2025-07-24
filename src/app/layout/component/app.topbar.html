@@ -113,36 +113,42 @@
     </div>-->
             
             
-    <div class="layout-topbar-actions">
-        
-        <div class="layout-config-menu flex items-center">
+    <div class="layout-topbar-actions w-full">
+        <div class="flex items-center justify-between w-full">
+            <span class="font-thin font-anta ml-3 opacity-75">
+                Developing by learning.
+            </span>
+            <div class="layout-config-menu flex items-center">
             
-            <p-button icon="pi pi-search" severity="secondary" styleClass="w-full" variant="text" size="large" routerLink="/search"/>
-
-            @if(userRolesData.length > 0 && userRolesData.includes('user')){
-                <p-button icon="pi pi-pen-to-square" severity="secondary" styleClass="overflow-hidden" variant="text" size="large" label="Write" routerLink="/create/post"/>
-            }
-            
-            
-            <!-- @if (loadingUserDataButton) {
-                <p-button [loading]="loadingUserDataButton" severity="secondary"  label="Loading user data..." variant="text"></p-button>
-            } -->
-
-            <!-- @if (loggedUserData.data === undefined && loadingUserDataButton === false) {
-                <p-button label="Sign In" variant="text" icon="pi pi-sign-in" (click)="goToSignIn()"/>
-            } -->
-
-            <!-- @if(signedInDataMenuIitems.length > 0) {
-                <div class="flex justify-center">
-                    <!-- <p-menu #menu [model]="signedInDataMenuIitems" [popup]="true" /> 
-                    <p-button (click)="showAuthControlDialog()" severity="secondary" variant="text" icon="pi pi-user" label="{{loggedUserData.data.userNickname}}"/>
-                </div>
-            } -->
-
-            <!-- <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
-            </button>-->
+                <p-button icon="pi pi-search" severity="secondary" styleClass="w-full" variant="text" size="large" routerLink="/search"/>
+    
+                @if(userRolesData.length > 0 && userRolesData.includes('user')){
+                    <p-button icon="pi pi-pen-to-square" severity="secondary" styleClass="overflow-hidden" variant="text" size="large" label="Write" routerLink="/create/post"/>
+                }
+                
+                
+                <!-- @if (loadingUserDataButton) {
+                    <p-button [loading]="loadingUserDataButton" severity="secondary"  label="Loading user data..." variant="text"></p-button>
+                } -->
+    
+                <!-- @if (loggedUserData.data === undefined && loadingUserDataButton === false) {
+                    <p-button label="Sign In" variant="text" icon="pi pi-sign-in" (click)="goToSignIn()"/>
+                } -->
+    
+                <!-- @if(signedInDataMenuIitems.length > 0) {
+                    <div class="flex justify-center">
+                        <!-- <p-menu #menu [model]="signedInDataMenuIitems" [popup]="true" /> 
+                        <p-button (click)="showAuthControlDialog()" severity="secondary" variant="text" icon="pi pi-user" label="{{loggedUserData.data.userNickname}}"/>
+                    </div>
+                } -->
+    
+                <!-- <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+                    <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+                </button>-->
+            </div>
         </div>
+        
+        
     </div>
 </div>
 
