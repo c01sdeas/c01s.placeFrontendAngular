@@ -1,5 +1,3 @@
-
-    
 <div class="w-full flex flex-row justify-between items-center mb-16">
     <p-button icon="pi pi-arrow-left" variant="text" size="large" (click)="locationBack()"/>
     
@@ -187,4 +185,46 @@
             <p-button icon="pi pi-check" label="Update" variant="text" (click)="updateBlogPostStatus()" [disabled]="updateAndDeleteBlogPostSpamControl"/>
         </div>
     </p-dialog>
+
+    <p-divider type="dashed"/>
+
+    <div class="w-full mt-12">
+        <h2 class="font-poppins text-2xl">Comments</h2>
+        <div class="flex flex-col items-end mt-6 w-full">
+            <textarea name="comment" pTextarea placeholder="Write a comment..." [(ngModel)]="createNewCommentData.comment" class="p-2 w-full h-24 resize-none transition-all duration-300 ease-in-out" (focus)="showCreateNewCommentDialog()" (blur)="hideCreateNewCommentDialog()"></textarea>
+            
+            <div class="flex flex-row items-center justify-end mt-2 w-full h-12">
+                <p-button icon="pi pi-times" label="Cancel" severity="secondary" variant="text" (click)="hideCreateNewCommentDialog()" class="transition-all duration-300 ease-in-out" ngClass="{{createNewCommentDialogVisible ? 'opacity-100' : 'opacity-0'}}"/>
+                <p-button icon="pi pi-check" label="Share comment" pTooltip="Share comment" (click)="createNewComment()" class="transition-all duration-300 ease-in-out" ngClass="{{createNewCommentDialogVisible ? 'opacity-100' : 'opacity-0'}}"/>
+            </div>
+        </div>
+
+        @if(commentsIsLoading){
+            <div class="w-full flex">
+                <i class="pi pi-spin pi-spinner"></i>
+            </div>
+        }
+
+        @if(!commentsIsLoading && (!comments.data || comments.data.length<=0)){
+            <p>No comments.</p>
+        }
+
+        @if(!commentsIsLoading && comments.data && comments.data.length > 0) {
+            <div class="w-full mt-12">
+              @for(comment of comments.data; track $index) {
+                <app-comment-thread [comment]="comment" [blogPostID]="blogPostDetail.data.id" [sessionUsername]="sessionUsername"></app-comment-thread>
+
+                <p-divider type="dashed" layout="horizontal" align="left"></p-divider>
+              }
+            </div>
+            
+          }
+    </div>
+
+    <style>
+        tr, td {
+            background-color: transparent !important;
+        }
+    </style>
 }
+

@@ -1,0 +1,33 @@
+<div class="flex flex-col justify-center w-full border-neutral-600 pb-3 pt-3 border-l pl-6">
+    <span class="text-sm flex flex-row justify-start items-start">
+        {{ comment.createdAt | date: 'MM/dd/yyyy h:mm a z' }}
+    </span>
+    <span class="flex flex-row items-center">
+        <i class="pi pi-user mr-2"></i>{{ comment.userNickname }}
+    </span>
+    <p class="font-lato w-full mt-2 flex items-center">{{ comment.comment }}</p>
+
+    <div class="flex flex-row">
+        <p-button icon="pi pi-thumbs-up" severity="secondary" variant="text"></p-button>
+        <p-button icon="pi pi-thumbs-down" severity="secondary" variant="text"></p-button>
+        <p-button icon="pi pi-reply" severity="secondary" variant="text" (click)="showReplyCommentDialog(comment._id)"></p-button>
+    </div>
+
+    @if(replyCommentDialogVisibleID==comment._id){
+        <div class="flex flex-col mt-4">
+            <textarea name="comment" pTextarea placeholder="Write a comment..." [(ngModel)]="createNewCommentData.comment" class="p-2 w-full h-24 resize-none transition-all duration-300 ease-in-out"></textarea>
+            <div class="flex flex-row items-center justify-end mt-2 w-full h-12">
+                <p-button icon="pi pi-times" label="Cancel" severity="secondary" variant="text" (click)="hideReplyCommentDialog()" class="transition-all duration-300 ease-in-out" ngClass="{{replyCommentDialogVisibleID==comment._id ? 'opacity-100' : 'opacity-0'}}"/>
+                <p-button icon="pi pi-check" label="Share comment" pTooltip="Share comment" (click)="createNewComment()" class="transition-all duration-300 ease-in-out" ngClass="{{replyCommentDialogVisibleID==comment._id ? 'opacity-100' : 'opacity-0'}}"/>
+            </div>
+        </div>
+    }
+
+    @if(comment.replies && comment.replies.length > 0){
+        <div class="mt-4">
+            @for(reply of comment.replies; track $index){
+                <app-comment-thread [comment]="reply" [blogPostID]="blogPostID" [sessionUsername]="sessionUsername"></app-comment-thread>
+            }
+        </div>
+    }
+</div>

@@ -172,6 +172,62 @@ interface IUpdateBlogPostViewLogResponseDto extends IBaseResponse {
     data: number;
 }
 
+
+//blogPostComments
+interface ICreateNewCommentRequestDto {
+    blogPostID: string;
+    comment: string;
+    parentID?: string;
+    username: string;
+}
+
+interface IUpdateCommentRequestDto {
+    id: string;
+    comment: string;
+}
+
+
+interface IComment {
+    _id: string;
+    blogPostID: string;
+    comment: string;
+    parentID?: string;
+    username: string;
+    userNickname: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface ICommentListResponseDto extends IBaseResponse {
+    data: IComment[];
+}
+
+interface ICommentResponseDto extends IBaseResponse {
+    data: IComment;
+}
+
+interface ICommentDeleteResponseDto extends IBaseResponse {
+    data: boolean;
+}
+
+interface ICommentUpdateResponseDto extends IBaseResponse {
+    data: IComment;
+}
+
+interface ICreateNewCommentResponseDto extends IBaseResponse {
+    data: IComment;
+}
+
+interface ICommentWithReplies extends IComment {
+    replies?: ICommentWithReplies[];
+}
+
+interface ICommentListWithRepliesResponseDto extends IBaseResponse {
+    data: ICommentWithReplies[];
+}
+
+
+
 export type {
     ICreateNewBlogPostRequestDto,
     ICreateNewBlogPostImageRequestDto,
@@ -200,5 +256,18 @@ export type {
     IUpdateBlogPostViewLogRequestDto,
     IUpdateBlogPostViewLogResponseDto,
     //subscribetonews
-    ISubscribeToNewsRequestDto
+    ISubscribeToNewsRequestDto,
+
+    //blogPostComments
+    ICreateNewCommentRequestDto,
+    IUpdateCommentRequestDto,
+    ICommentListResponseDto,
+    ICommentResponseDto,
+    ICommentDeleteResponseDto,
+    ICommentUpdateResponseDto,
+    ICreateNewCommentResponseDto,
+    ICommentWithReplies,
+    ICommentListWithRepliesResponseDto
+
+
 };

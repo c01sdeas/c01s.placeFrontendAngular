@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { IBlogResponseDto, IBlogListResponseDto, IBooleanResponse, ICreateNewBlogPostRequestDto, IDeleteBlogPostRequestDto, IGetAllBlogPostsRequestDto, IGetBlogPostByCategoryIDRequestDto, IGetBlogPostByCategorySlugRequestDto, IGetBlogPostBySlugRequestDto, IGetAllBlogPostsByUsernameRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, ISubscribeToNewsRequestDto, IUpdateBlogPostContentRequestDto, IUpdateBlogPostImageRequestDto, IUpdateBlogPostIntroRequestDto, IUpdateBlogPostMetaRequestDto, IUpdateBlogPostStatusRequestDto, IUpdateBlogPostTitleRequestDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewCountRequestDto, ICreateNewBlogPostImageRequestDto, ICreateNewBlogPostImageResponseDto, IUpdateBlogPostViewLogRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { IBlogResponseDto, IBlogListResponseDto, IBooleanResponse, ICreateNewBlogPostRequestDto, IDeleteBlogPostRequestDto, IGetAllBlogPostsRequestDto, IGetBlogPostByCategoryIDRequestDto, IGetBlogPostByCategorySlugRequestDto, IGetBlogPostBySlugRequestDto, IGetAllBlogPostsByUsernameRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, ISubscribeToNewsRequestDto, IUpdateBlogPostContentRequestDto, IUpdateBlogPostImageRequestDto, IUpdateBlogPostIntroRequestDto, IUpdateBlogPostMetaRequestDto, IUpdateBlogPostStatusRequestDto, IUpdateBlogPostTitleRequestDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewCountRequestDto, IUpdateBlogPostViewLogRequestDto, IUpdateBlogPostViewLogResponseDto, ICreateNewCommentRequestDto, IUpdateCommentRequestDto, ICommentListResponseDto, ICommentResponseDto, ICommentListWithRepliesResponseDto, ICreateNewBlogPostImageResponseDto } from '../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -123,5 +123,32 @@ export class BlogPostsCrudService {
     return this.httpClient.get<IBlogListResponseDto>(this.apiUrl + 'search-in-blog-posts', { params, withCredentials: true });
   }
 
-  
+  //blogPostComments
+  createNewCommentService(data:ICreateNewCommentRequestDto):Observable<ICommentResponseDto>{
+    return this.httpClient.post<ICommentResponseDto>(this.apiUrl + 'create-new-comment', data, { withCredentials: true });
+  }
+
+  updateCommentService(data:IUpdateCommentRequestDto):Observable<IBooleanResponse>{
+    return this.httpClient.patch<IBooleanResponse>(this.apiUrl + 'update-comment', data, { withCredentials: true });
+  }
+
+  deleteCommentService(data:{id:string}):Observable<IBooleanResponse>{
+    return this.httpClient.delete<IBooleanResponse>(this.apiUrl + 'delete-comment', { withCredentials: true, body:data });
+  }
+
+  getAllBlogPostCommentsByBlogPostIDService(data:{blogPostID:string}):Observable<ICommentListWithRepliesResponseDto>{
+    let params = new HttpParams();
+    params = params.append('blogPostID', data.blogPostID.toString());
+    return this.httpClient.get<ICommentListWithRepliesResponseDto>(this.apiUrl + 'get-all-comments-by-blog-post-id', { params, withCredentials: true });
+  }
+
+  getBlogPostCommentService(data:{id:string}):Observable<ICommentResponseDto>{
+    let params = new HttpParams();
+    params = params.append('id', data.id.toString());
+    return this.httpClient.get<ICommentResponseDto>(this.apiUrl + 'get-blog-post-comment', { params, withCredentials: true });
+  }
+
+  getAllBlogPostCommentsService():Observable<ICommentListResponseDto>{
+    return this.httpClient.get<ICommentListResponseDto>(this.apiUrl + 'get-all-blog-post-comments', { withCredentials: true });
+  }
 }

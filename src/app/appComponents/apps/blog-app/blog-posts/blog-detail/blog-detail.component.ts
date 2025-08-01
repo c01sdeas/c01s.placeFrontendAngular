@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
-import { IBlogResponseDto, IBooleanResponse, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { IBlogResponseDto, IBooleanResponse, ICommentListResponseDto, ICommentListWithRepliesResponseDto, ICommentResponseDto, ICreateNewCommentRequestDto, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { BlogPostsCrudService } from '../../../../../services/apps/blogApp/blog-posts-crud.service';
 import { CommonModule, Location } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
@@ -22,6 +22,9 @@ import { BlogLibrariesService } from '../../../../../services/apps/blogApp/blog-
 import { UserCrudService } from '../../../../../services/users/user-crud.service';
 import { IUserRolesResponseDto } from '../../../../../models/auths/authCrudModel';
 import { Meta } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { TextareaModule } from 'primeng/textarea';
+import { CommentThreadComponent } from '../comment-thread/comment-thread.component';
 
 @Component({
   selector: 'app-blog-detail',
@@ -39,7 +42,10 @@ import { Meta } from '@angular/platform-browser';
     InputTextModule,
     CardModule,
     MenuModule,
-    TooltipModule
+    TooltipModule,
+    FormsModule,
+    TextareaModule,
+    CommentThreadComponent
   ],
   templateUrl: './blog-detail.component.html',
   styleUrl: './blog-detail.component.scss'
@@ -95,7 +101,6 @@ export class BlogDetailComponent implements OnInit {
       next: (response:IBlogResponseDto) => {
         this.blogPostDetail = response;
         if (response.data.status === false) this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
-        this.getSessionUsername();
         this.updateBlogPostViewCount(this.blogPostDetail.data.id);
       },
       error: (error:any) => {
@@ -105,6 +110,7 @@ export class BlogDetailComponent implements OnInit {
       complete: () => {
         this.getBlogPostVoteCount();
         this.getBlogPostUserVoteControl();
+        this.getSessionUsername();
         // setTimeout(() => {
         //   this.fixImageSrcs();
         // }, 1);
@@ -113,6 +119,7 @@ export class BlogDetailComponent implements OnInit {
         }, 1);
         this.blogPostDetailIsLoading=false;
         if(this.blogPostDetail.data) this.titleService.setTitle(this.blogPostDetail.data.title+' - c01splace');
+        this.getAllBlogPostCommentsByBlogPostID();
       }
     });
   }
@@ -177,6 +184,7 @@ export class BlogDetailComponent implements OnInit {
   }
 
   sessionUsername:string="";
+  sessionUserNickname:string="";
   getSessionUsername(){
     if (!localStorage.getItem('authorization')) {
       return;
@@ -184,6 +192,7 @@ export class BlogDetailComponent implements OnInit {
     this.authCrudService._signedInData.subscribe(response=>{
       if(response){
         this.sessionUsername=response.data.username;
+        this.sessionUserNickname=response.data.userNickname;
         this.getBlogPostUserVoteControl();
         this.getUserRolesData();
       }
@@ -372,5 +381,76 @@ export class BlogDetailComponent implements OnInit {
     });
   }
 
+  //comments
+  createNewCommentData:ICreateNewCommentRequestDto= {} as ICreateNewCommentRequestDto;
+  createNewComment(){
+    this.createNewCommentData.blogPostID=this.blogPostDetail.data.id;
+    this.createNewCommentData.username=this.sessionUsername;
+    console.log(this.createNewCommentData);
+    
+    if(this.createNewCommentData.comment=="" || this.createNewCommentData.comment==null || this.createNewCommentData.comment==undefined){
+      this.messageService.add({severity:'error', summary:'Error!', detail:'Comment is required.'});
+      return;
+    }
+    console.log(this.createNewCommentData);
+    
+    
+    this.blogPostService.createNewCommentService(this.createNewCommentData).subscribe({
+      next: (response:ICommentResponseDto) => {
+        this.messageService.add({severity:'success', summary: 'Success!', detail:'Comment created successfully.'});
+        // this.getAllBlogPostCommentsByBlogPostID();
+        this.comments.data.unshift(response.data);
+        console.log(response);
+        
+        this.comments.totalRecords++;
+      },
+      error: (error:any) => {
+        (error);
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Error creating comment.'});
+        if(error.status==401 || this.sessionUsername=="" || this.sessionUsername==null || this.sessionUsername==undefined){
+          this.authCrudService.returnUrl = this.location.path();
+          this.router.navigateByUrl('/auth/login');
+        }
+      },
+      complete: () => {
+        
+        // this.getAllBlogPostCommentsByBlogPostID();
+
+        this.createNewCommentData= {} as ICreateNewCommentRequestDto;
+      }
+    });
+  }
+
+  createNewCommentDialogVisible:boolean=false;
+  showCreateNewCommentDialog(){
+    this.createNewCommentData= {} as ICreateNewCommentRequestDto;
+    this.createNewCommentDialogVisible=true;
+  }
+
+  hideCreateNewCommentDialog(){
+    this.createNewCommentDialogVisible=false;
+  }
+
+  commentsIsLoading:boolean=false;
+  comments:ICommentListWithRepliesResponseDto= {} as ICommentListWithRepliesResponseDto;
+  getAllBlogPostCommentsByBlogPostIDData:{blogPostID:string}={blogPostID:''};
+  getAllBlogPostCommentsByBlogPostID(){
+    if(this.blogPostDetail.data){
+      this.getAllBlogPostCommentsByBlogPostIDData.blogPostID=this.blogPostDetail.data.id;
+    }
+    this.commentsIsLoading=true;
+    this.blogPostService.getAllBlogPostCommentsByBlogPostIDService(this.getAllBlogPostCommentsByBlogPostIDData).subscribe({
+      next: (response:ICommentListWithRepliesResponseDto) => {
+        this.comments = response;
+        console.log(this.comments);
+      },
+      error: (error:any) => {
+        this.commentsIsLoading=false;
+      },
+      complete: () => {
+        this.commentsIsLoading=false;
+      }
+    });
+  }
   
 }

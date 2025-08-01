@@ -82,7 +82,7 @@ export class AppMenu {
             {
                 label: 'Write',
                 items: [
-                    { label: 'Write a new story', icon: 'pi pi-fw pi-pencil', routerLink: ['/create/post'] },
+                    { label: 'Write a new story', icon: 'pi pi-fw pi-pencil', command: _ => this.writeNewStory() },
                 ]
             },
             {
@@ -358,6 +358,14 @@ export class AppMenu {
     goToSignInPage(){
         this.authCrudService.returnUrl = this.router.url;
         this.router.navigateByUrl('/auth/login');
+    }
+
+    writeNewStory(){
+        if (!this.sessionUserData || !this.sessionUserData.data || !this.sessionUserData.data.username) {
+            this.goToSignInPage();
+        }else{
+            this.router.navigate(['/create/post']);
+        }
     }
 
     sessionUserData : ILoggedUserDataResponseDto = {} as ILoggedUserDataResponseDto;
