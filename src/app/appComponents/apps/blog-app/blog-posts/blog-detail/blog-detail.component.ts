@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
-import { IBlogResponseDto, IBooleanResponse, ICommentListResponseDto, ICommentListWithRepliesResponseDto, ICommentResponseDto, ICreateNewCommentRequestDto, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
+import { IBlogResponseDto, IBooleanResponse, IComment, ICommentListResponseDto, ICommentListWithRepliesResponseDto, ICommentResponseDto, ICreateNewCommentRequestDto, IGetBlogPostBySlugRequestDto, IGetBlogPostUserVoteControlRequestDto, IGetBlogPostUserVoteControlResponseDto, IGetBlogPostVotesRequestDto, IGetBlogPostVotesResponseDto, IUpdateBlogPostUserVotesRequestDto, IUpdateBlogPostViewLogResponseDto } from '../../../../../models/apps/blogApp/blogPosts/blogPostsCrudModel';
 import { BlogPostsCrudService } from '../../../../../services/apps/blogApp/blog-posts-crud.service';
 import { CommonModule, Location } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
@@ -441,11 +441,21 @@ export class BlogDetailComponent implements OnInit {
     this.commentsIsLoading=true;
     this.blogPostService.getAllBlogPostCommentsByBlogPostIDService(this.getAllBlogPostCommentsByBlogPostIDData).subscribe({
       next: (response:ICommentListWithRepliesResponseDto) => {
-        this.comments = response;
+        this.comments.message=response.message;
+        this.comments.statusCode=response.statusCode;
+        this.comments.success=response.success;
+
+        this.comments.data = response.data.filter((comment:IComment) => comment.status==true);
         console.log(this.comments);
       },
       error: (error:any) => {
         this.commentsIsLoading=false;
+        (error);
+        this.messageService.add({severity:'error', summary:'Error!', detail:'Error fetching comments.'});
+        if(error.status==401 || this.sessionUsername=="" || this.sessionUsername==null || this.sessionUsername==undefined){
+          this.authCrudService.returnUrl = this.location.path();
+          this.router.navigateByUrl('/auth/login');
+        }
       },
       complete: () => {
         this.commentsIsLoading=false;

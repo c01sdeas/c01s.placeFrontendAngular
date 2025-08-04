@@ -194,6 +194,9 @@ interface IComment {
     parentID?: string;
     username: string;
     userNickname: string;
+    voteCount: number;
+    vote: number;
+    status: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -226,6 +229,15 @@ interface ICommentListWithRepliesResponseDto extends IBaseResponse {
     data: ICommentWithReplies[];
 }
 
+interface IUpdateCommentVoteRequestDto {
+    commentID: string;
+    vote: number;
+}
+
+interface ICommentVoteCountByUsernameResponseDto extends IBaseResponse {
+    data: number;
+}
+
 
 
 export type {
@@ -255,6 +267,7 @@ export type {
     IUpdateBlogPostViewCountRequestDto,
     IUpdateBlogPostViewLogRequestDto,
     IUpdateBlogPostViewLogResponseDto,
+    IComment,
     //subscribetonews
     ISubscribeToNewsRequestDto,
 
@@ -267,7 +280,7 @@ export type {
     ICommentUpdateResponseDto,
     ICreateNewCommentResponseDto,
     ICommentWithReplies,
-    ICommentListWithRepliesResponseDto
-
-
+    ICommentListWithRepliesResponseDto,
+    IUpdateCommentVoteRequestDto,
+    ICommentVoteCountByUsernameResponseDto
 };
